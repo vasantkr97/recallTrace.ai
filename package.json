@@ -1,0 +1,21 @@
+{
+  "name": "recalltrace-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Graph-native, temporal memory and observability for AI agents.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24.0.0",
+    "npm": ">=11.0.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}

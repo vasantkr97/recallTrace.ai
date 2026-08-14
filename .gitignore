@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+.vite/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local planning and agent artifacts
+*.md
+.agents/
+.agent/
+.codex/
+AGENTS.md
+CLAUDE.md
+
+# Local HydraDB state
+.hydradb/
+hydradb-data/
