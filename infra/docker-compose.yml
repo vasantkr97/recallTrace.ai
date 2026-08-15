@@ -1,0 +1,56 @@
+name: recalltrace
+
+services:
+  hydradb-permissions:
+    image: ghcr.io/hydra-db/hydradb@sha256:db78309a233be54662db29744047e985a39b51c45a270d1a1f47c31a62cdb709
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        mkdir -p /data/store /data/cache
+        chown -R 10001:10001 /data/store /data/cache
+    volumes:
+      - hydradb-store:/data/store
+      - hydradb-cache:/data/cache
+    restart: "no"
+
+  hydradb:
+    image: ghcr.io/hydra-db/hydradb@sha256:db78309a233be54662db29744047e985a39b51c45a270d1a1f47c31a62cdb709
+    container_name: recalltrace-hydradb
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        umask 077
+        printf '%s\n' "$$HYDRADB_AUTH_TOKEN" > /tmp/hydradb-auth-token
+        exec /usr/local/bin/graph-node
+    environment:
+      HYDRADB_AUTH_TOKEN: ${HYDRADB_AUTH_TOKEN:?Set HYDRADB_AUTH_TOKEN in .env}
+      CLOUD_PROVIDER: local
+      LOCAL_PATH: /data/store
+      GRAPH_NAMESPACE: ${HYDRADB_NAMESPACE:-default}
+      GRAPH_ID: ${HYDRADB_GRAPH_ID:-default}
+      GRAPH_DATABASE: ${HYDRADB_DATABASE:-default}
+      GRAPH_CELL_ID: cell-0
+      GRAPH_CELLS: cell-0
+      GRAPH_NODE_ID: node-0
+      GRAPH_BOLT_NODE_ADDRESSES: node-0=127.0.0.1:7687
+      GRAPH_ADVERTISED_BOLT_ADDR: 127.0.0.1:7687
+      GRAPH_DATA_CACHE_DIR: /data/cache
+      GRAPH_AUTH_TOKEN_FILE: /tmp/hydradb-auth-token
+      GRAPH_ALLOW_PLAINTEXT: "true"
+      RUST_MIN_STACK: "33554432"
+    ports:
+      - "7687:7687"
+      - "8443:8443"
+      - "9090:9090"
+    volumes:
+      - hydradb-store:/data/store
+      - hydradb-cache:/data/cache
+    depends_on:
+      hydradb-permissions:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+volumes:
+  hydradb-store:
+  hydradb-cache:

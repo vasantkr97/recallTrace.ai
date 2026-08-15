@@ -16,6 +16,11 @@
     "dev": "npm run dev --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "hydra:up": "docker compose --env-file .env -f infra/docker-compose.yml up -d hydradb",
+    "hydra:down": "docker compose --env-file .env -f infra/docker-compose.yml down",
+    "hydra:logs": "docker compose --env-file .env -f infra/docker-compose.yml logs hydradb",
+    "milestone:1": "npm run milestone:1 --workspace @recalltrace/api",
+    "milestone:1:verify": "npm run milestone:1:verify --workspace @recalltrace/api"
   }
 }

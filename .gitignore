@@ -33,3 +33,4 @@ CLAUDE.md
 # Local HydraDB state
 .hydradb/
 hydradb-data/
+infra/hydradb/auth-token
