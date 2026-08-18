@@ -3,6 +3,7 @@ import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import test from "node:test";
 import type {
+  AskMemoryResponse,
   IngestSessionResponse,
   RecallResult
 } from "@recalltrace/contracts";
@@ -250,6 +251,121 @@ LIMIT 1
   }
 });
 
+test("answers grounded natural-language questions and abstains safely", async () => {
+  const dependencies = createHydraDependencies();
+  const { connection } = dependencies;
+  const app = createApp(dependencies);
+  const server = createServer(app);
+  const actorName = `Question Maya ${Date.now()}`;
+
+  try {
+    await connection.verifyConnectivity();
+    await new Promise<void>((resolve, reject) => {
+      server.once("listening", resolve);
+      server.once("error", reject);
+      server.listen(0, "127.0.0.1");
+    });
+
+    const address = server.address() as AddressInfo;
+    const baseUrl = `http://127.0.0.1:${address.port}`;
+
+    await postSession(baseUrl, actorName, {
+      content: "I work at Acme and I prefer dark mode.",
+      occurredAt: "2026-08-10T09:00:00.000Z"
+    });
+    await postSession(baseUrl, actorName, {
+      content: "I am building RecallTrace and I live in Bengaluru.",
+      occurredAt: "2026-08-12T09:00:00.000Z"
+    });
+    await postSession(baseUrl, actorName, {
+      content: "I am moving to London next month.",
+      occurredAt: "2026-08-14T09:00:00.000Z"
+    });
+    await postSession(baseUrl, actorName, {
+      content: "I now use light mode because of accessibility.",
+      occurredAt: "2026-08-18T09:00:00.000Z"
+    });
+
+    const current = await postQuestion(
+      baseUrl,
+      actorName,
+      "What theme does Maya prefer now?"
+    );
+    assert.equal(current.answered, true);
+    if (current.answered) {
+      assert.match(current.answer, /light mode/i);
+      assert.equal(current.coverage.ratio, 1);
+      assert.equal(current.evidence[0]?.claim.evidence.content, "I now use light mode because of accessibility.");
+    }
+
+    const previous = await postQuestion(
+      baseUrl,
+      actorName,
+      "What theme did Maya prefer previously?"
+    );
+    assert.equal(previous.answered, true);
+    if (previous.answered) {
+      assert.match(previous.answer, /dark mode/i);
+      assert.equal(previous.temporalMode, "previous");
+    }
+
+    const multiPart = await postQuestion(
+      baseUrl,
+      actorName,
+      "Where does Maya live and what is she building?"
+    );
+    assert.equal(multiPart.answered, true);
+    if (multiPart.answered) {
+      assert.match(multiPart.answer, /Bengaluru/);
+      assert.match(multiPart.answer, /RecallTrace/);
+      assert.equal(multiPart.coverage.ratio, 1);
+      assert.equal(multiPart.evidence.length, 2);
+    }
+
+    const historical = await postQuestion(
+      baseUrl,
+      actorName,
+      "What theme did Maya prefer as of 2026-08-15?"
+    );
+    assert.equal(historical.answered, true);
+    if (historical.answered) {
+      assert.match(historical.answer, /dark mode/i);
+      assert.equal(historical.temporalMode, "as_of");
+    }
+
+    const profile = await postQuestion(
+      baseUrl,
+      actorName,
+      "What do you remember about me?"
+    );
+    assert.equal(profile.answered, true);
+    if (profile.answered) {
+      assert.equal(profile.coverage.answered.length, 5);
+      assert.deepEqual(profile.coverage.missing, ["goal"]);
+      assert.equal(profile.coverage.ratio, 5 / 6);
+      assert.match(profile.answer, /No supporting evidence was found for goal/i);
+    }
+
+    const abstained = await postQuestion(
+      baseUrl,
+      actorName,
+      "What is Maya's favourite food?"
+    );
+    assert.equal(abstained.answered, false);
+    if (!abstained.answered) {
+      assert.equal(abstained.reason, "NO_SUPPORTING_EVIDENCE");
+      assert.match(abstained.message, /no supported memory slot or evidence/i);
+    }
+  } finally {
+    if (server.listening) {
+      await new Promise<void>((resolve, reject) => {
+        server.close((error) => (error ? reject(error) : resolve()));
+      });
+    }
+    await connection.close();
+  }
+});
+
 function postSession(
   baseUrl: string,
   actorName: string,
@@ -267,4 +383,18 @@ function postSession(
 
 async function readFailure(response: Response): Promise<string> {
   return response.ok ? "no error" : response.text();
+}
+
+async function postQuestion(
+  baseUrl: string,
+  actorName: string,
+  question: string
+): Promise<AskMemoryResponse> {
+  const response = await fetch(`${baseUrl}/api/ask`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ actorName, question })
+  });
+  assert.equal(response.status, 200, await readFailure(response));
+  return (await response.json()) as AskMemoryResponse;
 }

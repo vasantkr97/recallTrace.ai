@@ -2,6 +2,9 @@ import { readEnvironment } from "../config/environment.js";
 import { StructuredClaimExtractor } from "../memory/claimExtractor.js";
 import { EntityResolver } from "../memory/entityResolver.js";
 import { MemoryService } from "../memory/memoryService.js";
+import { MemoryAnswerService } from "../memory/memoryAnswerService.js";
+import { QuestionAnalyzer } from "../memory/questionAnalyzer.js";
+import { CanonicalSeedProvider } from "../memory/retrievalSeedProvider.js";
 import { TemporalDecisionEngine } from "../memory/temporalDecisionEngine.js";
 import { ClaimRepository } from "./claimRepository.js";
 import { HydraConnection } from "./hydraConnection.js";
@@ -16,12 +19,16 @@ export function createHydraDependencies() {
   const extractor = new StructuredClaimExtractor();
   const entities = new EntityResolver();
   const memory = new MemoryService(memoryRepository, extractor, entities);
+  const questions = new QuestionAnalyzer();
+  const seeds = new CanonicalSeedProvider();
+  const answers = new MemoryAnswerService(memory, questions, seeds, entities);
 
   return {
     environment,
     webOrigin: environment.WEB_ORIGIN,
     connection,
     claims,
-    memory
+    memory,
+    answers
   };
 }

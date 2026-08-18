@@ -1,4 +1,6 @@
 import type {
+  AskMemoryRequest,
+  AskMemoryResponse,
   CanonicalPredicate,
   IngestSessionRequest,
   IngestSessionResponse,
@@ -43,6 +45,16 @@ export async function checkHealth(): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+export async function askMemory(
+  request: AskMemoryRequest
+): Promise<AskMemoryResponse> {
+  return requestJson<AskMemoryResponse>(`${apiUrl}/api/ask`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(request)
+  });
 }
 
 async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {

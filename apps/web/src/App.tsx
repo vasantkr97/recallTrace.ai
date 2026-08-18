@@ -6,6 +6,7 @@ import type {
 } from "@recalltrace/contracts";
 import { checkHealth, ingestSession, recallMemory } from "./api";
 import { MemoryResult } from "./components/MemoryResult";
+import { AskPanel } from "./components/AskPanel";
 
 type ActivityState = "idle" | "storing" | "recalling" | "demo";
 
@@ -178,6 +179,8 @@ export function App() {
           <div><strong>Graph-native</strong><span>Conflicts stay visible</span></div>
         </div>
       </header>
+
+      <AskPanel actorName={actorName} />
 
       <section className="workspace" aria-label="RecallTrace memory workspace">
         <div className="composer-card">

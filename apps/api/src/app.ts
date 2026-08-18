@@ -9,12 +9,14 @@ import {
   type MemoryService
 } from "./memory/memoryService.js";
 import { canonicalPredicateSchema } from "./memory/claimSchema.js";
+import type { MemoryAnswerService } from "./memory/memoryAnswerService.js";
 
 export type AppDependencies = {
   webOrigin: string;
   connection: HydraConnection;
   claims: ClaimRepository;
   memory: MemoryService;
+  answers: MemoryAnswerService;
 };
 
 const conversationMessageSchema = z.object({
@@ -31,6 +33,12 @@ const ingestSessionSchema = z.object({
 const recallQuerySchema = z.object({
   actor: z.string().trim().min(1).max(120),
   predicate: canonicalPredicateSchema.default("preferred_theme"),
+  asOf: z.iso.datetime({ offset: true }).optional()
+});
+
+const askMemorySchema = z.object({
+  actorName: z.string().trim().min(1).max(120),
+  question: z.string().trim().min(3).max(1_000),
   asOf: z.iso.datetime({ offset: true }).optional()
 });
 
@@ -117,6 +125,25 @@ export function createApp(dependencies: AppDependencies) {
         return;
       }
 
+      response.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/ask", async (request, response, next) => {
+    const parsed = askMemorySchema.safeParse(request.body);
+
+    if (!parsed.success) {
+      response.status(400).json({
+        error: "Invalid memory question",
+        details: z.flattenError(parsed.error)
+      });
+      return;
+    }
+
+    try {
+      const result = await dependencies.answers.answer(parsed.data);
       response.json(result);
     } catch (error) {
       next(error);

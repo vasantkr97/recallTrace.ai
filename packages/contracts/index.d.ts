@@ -89,3 +89,67 @@ export type ApiError = {
   error: string;
   details?: unknown;
 };
+
+export type TemporalMode = "current" | "previous" | "as_of";
+
+export type AskMemoryRequest = {
+  actorName: string;
+  question: string;
+  asOf?: string;
+};
+
+export type AnswerCoverage = {
+  requested: CanonicalPredicate[];
+  answered: CanonicalPredicate[];
+  missing: CanonicalPredicate[];
+  ratio: number;
+};
+
+export type AnswerEvidence = {
+  claim: ClaimView;
+  graphPath: string[];
+};
+
+export type RetrievalTraceStep = {
+  stage:
+    | "QUESTION_ANALYSIS"
+    | "SEED_SELECTION"
+    | "GRAPH_TRAVERSAL"
+    | "EVIDENCE_SCORING"
+    | "ANSWER_GENERATION";
+  status: "info" | "hit" | "miss";
+  detail: string;
+};
+
+export type AskMemoryAnswered = {
+  answered: true;
+  question: string;
+  actor: string;
+  answer: string;
+  temporalMode: TemporalMode;
+  asOf: string | null;
+  confidence: number;
+  coverage: AnswerCoverage;
+  evidence: AnswerEvidence[];
+  conflicts: ClaimView[];
+  trace: RetrievalTraceStep[];
+};
+
+export type AbstentionReason =
+  | "UNSUPPORTED_QUESTION"
+  | "NO_SUPPORTING_EVIDENCE"
+  | "HISTORICAL_VALUE_NOT_FOUND";
+
+export type AskMemoryAbstained = {
+  answered: false;
+  question: string;
+  actor: string;
+  reason: AbstentionReason;
+  message: string;
+  temporalMode: TemporalMode;
+  asOf: string | null;
+  coverage: AnswerCoverage;
+  trace: RetrievalTraceStep[];
+};
+
+export type AskMemoryResponse = AskMemoryAnswered | AskMemoryAbstained;
