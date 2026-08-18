@@ -48,7 +48,8 @@ body::before {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -274,7 +275,8 @@ label > span {
 }
 
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   outline: none;
   border: 1px solid rgba(181, 213, 197, 0.16);
@@ -289,6 +291,20 @@ input {
   padding: 0 14px;
 }
 
+select {
+  height: 47px;
+  padding: 0 38px 0 14px;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #8da198 50%),
+    linear-gradient(135deg, #8da198 50%, transparent 50%);
+  background-position:
+    calc(100% - 17px) 20px,
+    calc(100% - 12px) 20px;
+  background-repeat: no-repeat;
+  background-size: 5px 5px;
+}
+
 textarea {
   min-height: 132px;
   padding: 14px;
@@ -299,7 +315,8 @@ textarea {
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   border-color: rgba(184, 245, 69, 0.58);
   box-shadow: 0 0 0 3px rgba(184, 245, 69, 0.07);
 }
@@ -331,6 +348,17 @@ textarea:focus {
 .preset-row button:hover:not(:disabled) {
   color: var(--ink);
   border-color: rgba(181, 213, 197, 0.35);
+}
+
+.recall-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.recall-controls label {
+  margin: 0;
 }
 
 .action-row {
@@ -409,6 +437,30 @@ textarea:focus {
   color: var(--danger);
 }
 
+.decision-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 16px;
+}
+
+.decision-strip > span {
+  padding: 7px 9px;
+  border: 1px solid rgba(100, 229, 174, 0.15);
+  border-radius: 7px;
+  color: #9dafA6;
+  background: rgba(100, 229, 174, 0.035);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+}
+
+.decision-strip strong {
+  margin-right: 4px;
+  color: var(--mint);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+}
+
 .result-card {
   position: relative;
   padding: 30px;
@@ -436,6 +488,44 @@ textarea:focus {
   border-radius: 99px;
   color: var(--mint);
   background: rgba(100, 229, 174, 0.05);
+}
+
+.trace-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: -7px 0 18px;
+}
+
+.trace-metrics > div {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(5, 13, 10, 0.34);
+}
+
+.trace-metrics strong {
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 580;
+}
+
+.trace-metrics span {
+  color: #72857c;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.trace-metrics .metric-danger {
+  border-color: rgba(255, 138, 122, 0.22);
+}
+
+.trace-metrics .metric-danger strong {
+  color: var(--danger);
 }
 
 .claim-stack {
@@ -549,6 +639,65 @@ textarea:focus {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 10px;
   text-align: center;
+}
+
+.signal-panel {
+  position: relative;
+  z-index: 1;
+  margin-top: 14px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(5, 13, 10, 0.38);
+}
+
+.signal-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 9px;
+  color: #82958c;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.signal-title strong {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.signal-panel p {
+  margin: 6px 0 0;
+  color: #9cafA6;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.signal-panel p strong {
+  color: var(--ink);
+  text-transform: capitalize;
+}
+
+.conflict-panel {
+  border-color: rgba(255, 138, 122, 0.2);
+  background: rgba(255, 138, 122, 0.035);
+}
+
+.conflict-panel .signal-title {
+  color: #df9f96;
+}
+
+.support-panel {
+  border-color: rgba(100, 229, 174, 0.17);
+  background: rgba(100, 229, 174, 0.025);
 }
 
 .path-panel {
@@ -702,6 +851,8 @@ footer {
   .section-heading, .result-heading { display: grid; }
   .demo-button { width: fit-content; }
   .action-row { flex-direction: column; }
+  .recall-controls { grid-template-columns: 1fr; }
+  .trace-metrics { grid-template-columns: 1fr 1fr 1fr; }
   .primary-button { flex: auto; }
   .verified-badge { width: fit-content; }
   footer { display: grid; gap: 6px; }

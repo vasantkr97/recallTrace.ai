@@ -1,4 +1,5 @@
 import type {
+  CanonicalPredicate,
   IngestSessionRequest,
   IngestSessionResponse,
   RecallResult
@@ -21,9 +22,15 @@ export async function ingestSession(
 
 export async function recallMemory(
   actor: string,
-  predicate = "preferred_theme"
+  predicate: CanonicalPredicate = "preferred_theme",
+  asOf?: string
 ): Promise<RecallResult> {
   const query = new URLSearchParams({ actor, predicate });
+
+  if (asOf) {
+    query.set("asOf", asOf);
+  }
+
   return requestJson<RecallResult>(`${apiUrl}/api/recall?${query}`);
 }
 

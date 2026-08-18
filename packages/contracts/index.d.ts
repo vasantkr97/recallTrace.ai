@@ -11,6 +11,28 @@ export type IngestSessionRequest = {
   messages: ConversationMessageInput[];
 };
 
+export type CanonicalPredicate =
+  | "preferred_theme"
+  | "employer"
+  | "current_city"
+  | "destination_city"
+  | "active_project"
+  | "goal";
+
+export type ClaimStatus =
+  | "current"
+  | "superseded"
+  | "contested"
+  | "supporting"
+  | "duplicate";
+
+export type MemoryDecision =
+  | "NEW"
+  | "SUPERSEDES"
+  | "CONTRADICTS"
+  | "SUPPORTS"
+  | "DUPLICATES";
+
 export type EvidenceView = {
   content: string;
   occurredAt: string;
@@ -18,12 +40,20 @@ export type EvidenceView = {
 };
 
 export type ClaimView = {
-  predicate: string;
+  predicate: CanonicalPredicate;
   label: string;
   value: string;
-  status: "current" | "superseded";
+  status: ClaimStatus;
   observedAt: string;
   evidence: EvidenceView;
+};
+
+export type MemoryDecisionView = {
+  predicate: CanonicalPredicate;
+  label: string;
+  value: string;
+  decision: MemoryDecision;
+  status: ClaimStatus;
 };
 
 export type RecallResult = {
@@ -32,6 +62,11 @@ export type RecallResult = {
   predicate: string;
   current: ClaimView;
   previous: ClaimView | null;
+  history: ClaimView[];
+  conflicts: ClaimView[];
+  supportingEvidence: EvidenceView[];
+  asOf: string | null;
+  confidence: number;
   path: string[];
 };
 
@@ -46,6 +81,7 @@ export type IngestSessionResponse = {
   sessionId: string;
   storedTurns: number;
   extractedClaim: ClaimView;
+  extractedClaims: MemoryDecisionView[];
   recall: RecallResult;
 };
 

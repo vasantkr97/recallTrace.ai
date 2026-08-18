@@ -2,10 +2,20 @@ import { randomBytes, randomUUID } from "node:crypto";
 import type {
   ClaimView,
   ConversationMessageInput,
+  MemoryDecisionView,
   RecallResult
 } from "@recalltrace/contracts";
 import type { Record as Neo4jRecord } from "neo4j-driver";
-import type { ExtractedClaim } from "../memory/claimExtractor.js";
+import {
+  canonicalPredicateSchema,
+  claimStatusSchema,
+  type ExtractedClaim,
+  type MemoryDecision
+} from "../memory/claimSchema.js";
+import {
+  TemporalDecisionEngine,
+  type CurrentClaimSnapshot
+} from "../memory/temporalDecisionEngine.js";
 import type { HydraConnection } from "./hydraConnection.js";
 
 type StoreSessionInput = {
@@ -14,11 +24,20 @@ type StoreSessionInput = {
   sessionId: string;
   ingestedAt: string;
   messages: ConversationMessageInput[];
-  claim: ExtractedClaim;
+  claims: ExtractedClaim[];
 };
 
-type CurrentClaimIdentity = {
-  id: number;
+export type StoreSessionOutcome = {
+  decisions: MemoryDecisionView[];
+};
+
+type StoredTurn = {
+  vertex: number;
+  externalId: string;
+  role: string;
+  content: string;
+  occurredAt: string;
+  position: number;
 };
 
 const findActorQuery = `
@@ -99,16 +118,21 @@ MERGE (claim)-[relationship:SUPPORTED_BY {id: row.relationship_vertex}]->(turn)
 `;
 
 const findCurrentClaimQuery = `
-MATCH (actor:Actor {id: $actorId})-[:HAS_CLAIM]->(claim:Claim {predicate: $predicate, status: $status})
-RETURN claim.id AS claimId
+MATCH
+  (actor:Actor {id: $actorId})-[:HAS_CLAIM]->(claim:Claim {predicate: $predicate, status: $status}),
+  (claim)-[:SUPPORTED_BY]->(turn:Turn)
+RETURN
+  claim.id AS claimId,
+  claim.value AS value,
+  claim.observedAt AS observedAt,
+  turn.content AS evidenceContent
 LIMIT 1
 `;
 
-const createSupersedesRelationshipQuery = `
-UNWIND $rows AS row
-MATCH (current:Claim {id: row.source_vertex}), (previous:Claim {id: row.destination_vertex})
-MERGE (current)-[relationship:SUPERSEDES {id: row.relationship_vertex}]->(previous)
-`;
+const createSupersedesRelationshipQuery = relationshipQuery("SUPERSEDES");
+const createContradictsRelationshipQuery = relationshipQuery("CONTRADICTS");
+const createSupportsRelationshipQuery = relationshipQuery("SUPPORTS");
+const createDuplicatesRelationshipQuery = relationshipQuery("DUPLICATES");
 
 const markClaimSupersededQuery = `
 UNWIND $rows AS row
@@ -116,9 +140,9 @@ MERGE (claim {id: row.claimId})
 SET claim:Claim, claim.status = row.status
 `;
 
-const readCurrentClaimQuery = `
+const readClaimsQuery = `
 MATCH
-  (actor:Actor {normalizedName: $normalizedName})-[:HAS_CLAIM]->(claim:Claim {predicate: $predicate, status: $status}),
+  (actor:Actor {normalizedName: $normalizedName})-[:HAS_CLAIM]->(claim:Claim {predicate: $predicate}),
   (claim)-[:SUPPORTED_BY]->(turn:Turn),
   (session:Session)-[:HAS_TURN]->(turn)
 RETURN
@@ -132,39 +156,18 @@ RETURN
   turn.content AS evidenceContent,
   turn.occurredAt AS evidenceOccurredAt,
   session.externalId AS sessionId
-LIMIT 1
-`;
-
-const readPreviousClaimQuery = `
-MATCH
-  (current:Claim {id: $currentClaimId})-[:SUPERSEDES]->(previous:Claim),
-  (previous)-[:SUPPORTED_BY]->(turn:Turn),
-  (session:Session)-[:HAS_TURN]->(turn)
-RETURN
-  previous.predicate AS predicate,
-  previous.displayLabel AS displayLabel,
-  previous.value AS value,
-  previous.status AS status,
-  previous.observedAt AS observedAt,
-  turn.content AS evidenceContent,
-  turn.occurredAt AS evidenceOccurredAt,
-  session.externalId AS sessionId
-LIMIT 1
 `;
 
 export class MemoryRepository {
-  constructor(private readonly connection: HydraConnection) {}
+  constructor(
+    private readonly connection: HydraConnection,
+    private readonly decisionEngine: TemporalDecisionEngine
+  ) {}
 
-  async storeSession(input: StoreSessionInput): Promise<void> {
+  async storeSession(input: StoreSessionInput): Promise<StoreSessionOutcome> {
     const actorId = await this.findOrCreateActor(input);
-    const previousClaim = await this.findCurrentClaim(
-      actorId,
-      input.claim.predicate
-    );
     const sessionVertex = graphId();
-    const claimVertex = graphId();
-    const claimExternalId = randomUUID();
-    const turns = input.messages.map((message, position) => ({
+    const turns: StoredTurn[] = input.messages.map((message, position) => ({
       vertex: graphId(),
       externalId: randomUUID(),
       role: message.role,
@@ -172,106 +175,120 @@ export class MemoryRepository {
       occurredAt: message.occurredAt ?? input.ingestedAt,
       position
     }));
-    const evidenceTurn = turns[input.claim.sourceMessageIndex];
 
-    if (!evidenceTurn) {
-      throw new Error("The extracted claim references a missing source turn");
-    }
+    await this.storeConversationGraph(
+      actorId,
+      sessionVertex,
+      input,
+      turns
+    );
 
-    await this.connection.write(createSessionQuery, {
-      rows: [{
-        id: sessionVertex,
-        externalId: input.sessionId,
-        ingestedAt: input.ingestedAt,
-        messageCount: turns.length
-      }]
-    });
-    await this.connection.write(createTurnsQuery, { rows: turns });
-    await this.connection.write(createClaimQuery, {
-      rows: [{
-        id: claimVertex,
-        externalId: claimExternalId,
-        predicate: input.claim.predicate,
-        displayLabel: input.claim.label,
-        value: input.claim.value,
-        status: "current",
-        observedAt: input.claim.observedAt,
-        extractor: "deterministic-theme-v1"
-      }]
-    });
-    await this.connection.write(createActorSessionRelationshipQuery, {
-      rows: [{
-        relationship_vertex: graphId(),
-        source_vertex: actorId,
-        destination_vertex: sessionVertex
-      }]
-    });
-    await this.connection.write(createSessionTurnRelationshipsQuery, {
-      rows: turns.map((turn) => ({
-        relationship_vertex: graphId(),
-        source_vertex: sessionVertex,
-        destination_vertex: turn.vertex,
-        position: turn.position
-      }))
-    });
-    await this.connection.write(createActorClaimRelationshipQuery, {
-      rows: [{
-        relationship_vertex: graphId(),
-        source_vertex: actorId,
-        destination_vertex: claimVertex
-      }]
-    });
-    await this.connection.write(createEvidenceRelationshipQuery, {
-      rows: [{
-        relationship_vertex: graphId(),
-        source_vertex: claimVertex,
-        destination_vertex: evidenceTurn.vertex
-      }]
-    });
+    const decisions: MemoryDecisionView[] = [];
 
-    if (previousClaim) {
-      await this.connection.write(createSupersedesRelationshipQuery, {
-        rows: [{
-          relationship_vertex: graphId(),
-          source_vertex: claimVertex,
-          destination_vertex: previousClaim.id
-        }]
-      });
-      await this.connection.write(markClaimSupersededQuery, {
-        rows: [{ claimId: previousClaim.id, status: "superseded" }]
+    for (const claim of input.claims) {
+      const evidenceTurn = turns[claim.sourceMessageIndex];
+
+      if (!evidenceTurn) {
+        throw new Error("An extracted claim references a missing source turn");
+      }
+
+      const current = await this.findCurrentClaim(actorId, claim.predicate);
+      const temporalDecision = this.decisionEngine.decide(
+        claim,
+        current,
+        evidenceTurn.content
+      );
+      const claimVertex = graphId();
+
+      await this.storeClaim(
+        actorId,
+        claimVertex,
+        claim,
+        evidenceTurn,
+        temporalDecision.incomingStatus
+      );
+
+      if (current) {
+        await this.linkTemporalDecision(
+          temporalDecision.decision,
+          claimVertex,
+          current.id
+        );
+
+        if (temporalDecision.replacesCurrent) {
+          await this.connection.write(markClaimSupersededQuery, {
+            rows: [{ claimId: current.id, status: "superseded" }]
+          });
+        }
+      }
+
+      decisions.push({
+        predicate: claim.predicate,
+        label: claim.label,
+        value: claim.value,
+        decision: temporalDecision.decision,
+        status: temporalDecision.incomingStatus
       });
     }
+
+    return { decisions };
   }
 
   async recall(
     normalizedActorName: string,
-    predicate: string
+    predicate: string,
+    asOf?: string
   ): Promise<RecallResult | null> {
-    const currentResult = await this.connection.read(readCurrentClaimQuery, {
+    const result = await this.connection.read(readClaimsQuery, {
       normalizedName: normalizedActorName,
-      predicate,
-      status: "current"
+      predicate
     });
-    const currentRecord = currentResult.records[0];
 
-    if (!currentRecord) {
+    if (result.records.length === 0) {
       return null;
     }
 
-    const currentClaimId = requiredNumber(currentRecord, "claimId");
-    const previousResult = await this.connection.read(readPreviousClaimQuery, {
-      currentClaimId
-    });
-    const previousRecord = previousResult.records[0];
-    const actor = requiredString(currentRecord, "actor");
-    const current = mapClaim(currentRecord);
+    const actor = requiredString(result.records[0]!, "actor");
+    const cutoff = asOf ? Date.parse(asOf) : Number.POSITIVE_INFINITY;
+    const claims = result.records
+      .map(mapClaim)
+      .filter((claim) => Date.parse(claim.observedAt) <= cutoff)
+      .sort(newestFirst);
+    const truthHistory = claims.filter(
+      (claim) => claim.status === "current" || claim.status === "superseded"
+    );
+    const effective = truthHistory[0];
+
+    if (!effective) {
+      return null;
+    }
+
+    const current: ClaimView = { ...effective, status: "current" };
+    const history = truthHistory.slice(1).map(
+      (claim): ClaimView => ({ ...claim, status: "superseded" })
+    );
+    const conflicts = claims.filter(
+      (claim) =>
+        claim.status === "contested" &&
+        normalizeValue(claim.value) !== normalizeValue(current.value)
+    );
+    const supportingClaims = claims.filter(
+      (claim) =>
+        (claim.status === "supporting" || claim.status === "duplicate") &&
+        normalizeValue(claim.value) === normalizeValue(current.value)
+    );
 
     return {
       found: true,
       actor,
       predicate: current.predicate,
       current,
-      previous: previousRecord ? mapClaim(previousRecord) : null,
+      previous: history[0] ?? null,
+      history,
+      conflicts,
+      supportingEvidence: supportingClaims.map((claim) => claim.evidence),
+      asOf: asOf ?? null,
+      confidence: calculateConfidence(supportingClaims.length, conflicts.length),
       path: [
         `Actor(${actor})`,
         "HAS_CLAIM",
@@ -280,6 +297,79 @@ export class MemoryRepository {
         "Turn"
       ]
     };
+  }
+
+  private async storeConversationGraph(
+    actorId: number,
+    sessionVertex: number,
+    input: StoreSessionInput,
+    turns: StoredTurn[]
+  ): Promise<void> {
+    await this.connection.write(createSessionQuery, {
+      rows: [
+        {
+          id: sessionVertex,
+          externalId: input.sessionId,
+          ingestedAt: input.ingestedAt,
+          messageCount: turns.length
+        }
+      ]
+    });
+    await this.connection.write(createTurnsQuery, { rows: turns });
+    await this.connection.write(createActorSessionRelationshipQuery, {
+      rows: [relationshipRow(graphId(), actorId, sessionVertex)]
+    });
+    await this.connection.write(createSessionTurnRelationshipsQuery, {
+      rows: turns.map((turn) => ({
+        ...relationshipRow(graphId(), sessionVertex, turn.vertex),
+        position: turn.position
+      }))
+    });
+  }
+
+  private async storeClaim(
+    actorId: number,
+    claimVertex: number,
+    claim: ExtractedClaim,
+    evidenceTurn: StoredTurn,
+    status: MemoryDecisionView["status"]
+  ): Promise<void> {
+    await this.connection.write(createClaimQuery, {
+      rows: [
+        {
+          id: claimVertex,
+          externalId: randomUUID(),
+          predicate: claim.predicate,
+          displayLabel: claim.label,
+          value: claim.value,
+          status,
+          observedAt: claim.observedAt,
+          extractor: "deterministic-structured-v2"
+        }
+      ]
+    });
+    await this.connection.write(createActorClaimRelationshipQuery, {
+      rows: [relationshipRow(graphId(), actorId, claimVertex)]
+    });
+    await this.connection.write(createEvidenceRelationshipQuery, {
+      rows: [relationshipRow(graphId(), claimVertex, evidenceTurn.vertex)]
+    });
+  }
+
+  private async linkTemporalDecision(
+    decision: MemoryDecision,
+    incomingClaimId: number,
+    currentClaimId: number
+  ): Promise<void> {
+    const query = temporalRelationshipQuery(decision);
+
+    if (!query) {
+      return;
+    }
+
+    await this.connection.write(query, {
+      rows: [relationshipRow(graphId(), incomingClaimId, currentClaimId)]
+    });
   }
 
   private async findOrCreateActor(input: StoreSessionInput): Promise<number> {
@@ -294,12 +384,14 @@ export class MemoryRepository {
 
     const actorId = graphId();
     await this.connection.write(createActorQuery, {
-      rows: [{
-        id: actorId,
-        name: input.actorName,
-        normalizedName: input.normalizedActorName,
-        createdAt: input.ingestedAt
-      }]
+      rows: [
+        {
+          id: actorId,
+          name: input.actorName,
+          normalizedName: input.normalizedActorName,
+          createdAt: input.ingestedAt
+        }
+      ]
     });
     return actorId;
   }
@@ -307,7 +399,7 @@ export class MemoryRepository {
   private async findCurrentClaim(
     actorId: number,
     predicate: string
-  ): Promise<CurrentClaimIdentity | null> {
+  ): Promise<CurrentClaimSnapshot | null> {
     const result = await this.connection.read(findCurrentClaimQuery, {
       actorId,
       predicate,
@@ -320,9 +412,47 @@ export class MemoryRepository {
     }
 
     return {
-      id: requiredNumber(record, "claimId")
+      id: requiredNumber(record, "claimId"),
+      value: requiredString(record, "value"),
+      observedAt: requiredString(record, "observedAt"),
+      evidenceContent: requiredString(record, "evidenceContent")
     };
   }
+}
+
+function relationshipQuery(type: string): string {
+  return `
+UNWIND $rows AS row
+MATCH (incoming:Claim {id: row.source_vertex}), (existing:Claim {id: row.destination_vertex})
+MERGE (incoming)-[relationship:${type} {id: row.relationship_vertex}]->(existing)
+`;
+}
+
+function temporalRelationshipQuery(decision: MemoryDecision): string | null {
+  switch (decision) {
+    case "SUPERSEDES":
+      return createSupersedesRelationshipQuery;
+    case "CONTRADICTS":
+      return createContradictsRelationshipQuery;
+    case "SUPPORTS":
+      return createSupportsRelationshipQuery;
+    case "DUPLICATES":
+      return createDuplicatesRelationshipQuery;
+    case "NEW":
+      return null;
+  }
+}
+
+function relationshipRow(
+  relationshipVertex: number,
+  sourceVertex: number,
+  destinationVertex: number
+) {
+  return {
+    relationship_vertex: relationshipVertex,
+    source_vertex: sourceVertex,
+    destination_vertex: destinationVertex
+  };
 }
 
 function graphId(): number {
@@ -330,17 +460,11 @@ function graphId(): number {
 }
 
 function mapClaim(record: Neo4jRecord): ClaimView {
-  const status = requiredString(record, "status");
-
-  if (status !== "current" && status !== "superseded") {
-    throw new Error(`HydraDB returned an invalid claim status: ${status}`);
-  }
-
   return {
-    predicate: requiredString(record, "predicate"),
+    predicate: canonicalPredicateSchema.parse(requiredString(record, "predicate")),
     label: requiredString(record, "displayLabel"),
     value: requiredString(record, "value"),
-    status,
+    status: claimStatusSchema.parse(requiredString(record, "status")),
     observedAt: requiredString(record, "observedAt"),
     evidence: {
       content: requiredString(record, "evidenceContent"),
@@ -348,6 +472,19 @@ function mapClaim(record: Neo4jRecord): ClaimView {
       sessionId: requiredString(record, "sessionId")
     }
   };
+}
+
+function newestFirst(left: ClaimView, right: ClaimView): number {
+  return Date.parse(right.observedAt) - Date.parse(left.observedAt);
+}
+
+function normalizeValue(value: string): string {
+  return value.trim().toLocaleLowerCase();
+}
+
+function calculateConfidence(supports: number, conflicts: number): number {
+  const score = 0.88 + Math.min(supports, 3) * 0.03 - Math.min(conflicts, 3) * 0.12;
+  return Number(Math.max(0.4, Math.min(0.98, score)).toFixed(2));
 }
 
 function requiredString(record: Neo4jRecord, key: string): string {

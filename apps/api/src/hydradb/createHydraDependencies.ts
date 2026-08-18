@@ -1,6 +1,8 @@
 import { readEnvironment } from "../config/environment.js";
-import { PreferenceClaimExtractor } from "../memory/claimExtractor.js";
+import { StructuredClaimExtractor } from "../memory/claimExtractor.js";
+import { EntityResolver } from "../memory/entityResolver.js";
 import { MemoryService } from "../memory/memoryService.js";
+import { TemporalDecisionEngine } from "../memory/temporalDecisionEngine.js";
 import { ClaimRepository } from "./claimRepository.js";
 import { HydraConnection } from "./hydraConnection.js";
 import { MemoryRepository } from "./memoryRepository.js";
@@ -9,9 +11,11 @@ export function createHydraDependencies() {
   const environment = readEnvironment();
   const connection = HydraConnection.fromEnvironment(environment);
   const claims = new ClaimRepository(connection);
-  const memoryRepository = new MemoryRepository(connection);
-  const extractor = new PreferenceClaimExtractor();
-  const memory = new MemoryService(memoryRepository, extractor);
+  const decisionEngine = new TemporalDecisionEngine();
+  const memoryRepository = new MemoryRepository(connection, decisionEngine);
+  const extractor = new StructuredClaimExtractor();
+  const entities = new EntityResolver();
+  const memory = new MemoryService(memoryRepository, extractor, entities);
 
   return {
     environment,

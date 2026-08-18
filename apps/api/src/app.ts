@@ -8,6 +8,7 @@ import {
   MemoryExtractionError,
   type MemoryService
 } from "./memory/memoryService.js";
+import { canonicalPredicateSchema } from "./memory/claimSchema.js";
 
 export type AppDependencies = {
   webOrigin: string;
@@ -29,7 +30,8 @@ const ingestSessionSchema = z.object({
 
 const recallQuerySchema = z.object({
   actor: z.string().trim().min(1).max(120),
-  predicate: z.string().trim().min(1).max(120).default("preferred_theme")
+  predicate: canonicalPredicateSchema.default("preferred_theme"),
+  asOf: z.iso.datetime({ offset: true }).optional()
 });
 
 export function createApp(dependencies: AppDependencies) {
@@ -100,7 +102,8 @@ export function createApp(dependencies: AppDependencies) {
     try {
       const result = await dependencies.memory.recall(
         parsed.data.actor,
-        parsed.data.predicate
+        parsed.data.predicate,
+        parsed.data.asOf
       );
 
       if (!result) {
