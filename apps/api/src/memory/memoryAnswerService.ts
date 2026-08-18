@@ -29,6 +29,7 @@ export class MemoryAnswerService {
   ) {}
 
   async answer(request: AskMemoryRequest): Promise<AskMemoryResponse> {
+    const startedAt = performance.now();
     const actor = this.entities.resolveActor(request.actorName);
     const intent = this.questions.analyze(request.question, request.asOf);
     const trace: RetrievalTraceStep[] = [
@@ -63,7 +64,8 @@ export class MemoryAnswerService {
         temporalMode: intent.temporalMode,
         asOf: intent.asOf,
         coverage: emptyCoverage(),
-        trace
+        trace,
+        observability: buildObservability(startedAt, 0, [], 0, 0)
       };
     }
 
@@ -138,7 +140,14 @@ export class MemoryAnswerService {
         temporalMode: intent.temporalMode,
         asOf: intent.asOf,
         coverage,
-        trace
+        trace,
+        observability: buildObservability(
+          startedAt,
+          seeds.length,
+          selected,
+          0,
+          0
+        )
       };
     }
 
@@ -181,7 +190,14 @@ export class MemoryAnswerService {
       coverage,
       evidence,
       conflicts,
-      trace
+      trace,
+      observability: buildObservability(
+        startedAt,
+        seeds.length,
+        selected,
+        evidence.length,
+        conflicts.length
+      )
     };
   }
 }
@@ -230,11 +246,49 @@ function deduplicateEvidence(
         `Claim(${memory.predicate}=${memory.claim.value})`,
         "SUPPORTED_BY",
         "Turn"
+      ],
+      graphNodeIds: [
+        memory.recall.actorGraphId,
+        memory.claim.graphId,
+        memory.claim.evidence.graphId,
+        memory.claim.evidence.sessionGraphId
       ]
     });
   }
 
   return [...unique.values()];
+}
+
+function buildObservability(
+  startedAt: number,
+  seedsSelected: number,
+  selected: SelectedMemory[],
+  evidenceSelected: number,
+  conflictsFound: number
+) {
+  const nodes = new Set<string>();
+  let edgesTraversed = 0;
+
+  for (const memory of selected) {
+    nodes.add(memory.recall.actorGraphId);
+    nodes.add(memory.claim.graphId);
+    nodes.add(memory.claim.evidence.graphId);
+    nodes.add(memory.claim.evidence.sessionGraphId);
+    edgesTraversed += 3;
+  }
+
+  if (seedsSelected > 0 && nodes.size === 0) {
+    nodes.add("actor-seed");
+  }
+
+  return {
+    seedsSelected,
+    nodesTraversed: nodes.size,
+    edgesTraversed,
+    evidenceSelected,
+    conflictsFound,
+    latencyMs: Number((performance.now() - startedAt).toFixed(2))
+  };
 }
 
 function deduplicateClaims(claims: ClaimView[]): ClaimView[] {

@@ -5,6 +5,7 @@ import type {
   CanonicalPredicate,
   IngestSessionRequest,
   IngestSessionResponse,
+  MemoryGraphResponse,
   RecallResult
 } from "@recalltrace/contracts";
 
@@ -60,6 +61,11 @@ export async function askMemory(
 
 export async function getBenchmarkSummary(): Promise<BenchmarkSummaryResponse> {
   return requestJson<BenchmarkSummaryResponse>(`${apiUrl}/api/benchmark`);
+}
+
+export async function getMemoryGraph(actor: string): Promise<MemoryGraphResponse> {
+  const query = new URLSearchParams({ actor });
+  return requestJson<MemoryGraphResponse>(`${apiUrl}/api/graph?${query}`);
 }
 
 async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {

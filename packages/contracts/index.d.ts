@@ -34,12 +34,15 @@ export type MemoryDecision =
   | "DUPLICATES";
 
 export type EvidenceView = {
+  graphId: string;
+  sessionGraphId: string;
   content: string;
   occurredAt: string;
   sessionId: string;
 };
 
 export type ClaimView = {
+  graphId: string;
   predicate: CanonicalPredicate;
   label: string;
   value: string;
@@ -59,6 +62,7 @@ export type MemoryDecisionView = {
 export type RecallResult = {
   found: true;
   actor: string;
+  actorGraphId: string;
   predicate: string;
   current: ClaimView;
   previous: ClaimView | null;
@@ -108,6 +112,16 @@ export type AnswerCoverage = {
 export type AnswerEvidence = {
   claim: ClaimView;
   graphPath: string[];
+  graphNodeIds: string[];
+};
+
+export type QueryObservability = {
+  seedsSelected: number;
+  nodesTraversed: number;
+  edgesTraversed: number;
+  evidenceSelected: number;
+  conflictsFound: number;
+  latencyMs: number;
 };
 
 export type RetrievalTraceStep = {
@@ -133,6 +147,7 @@ export type AskMemoryAnswered = {
   evidence: AnswerEvidence[];
   conflicts: ClaimView[];
   trace: RetrievalTraceStep[];
+  observability: QueryObservability;
 };
 
 export type AbstentionReason =
@@ -150,9 +165,58 @@ export type AskMemoryAbstained = {
   asOf: string | null;
   coverage: AnswerCoverage;
   trace: RetrievalTraceStep[];
+  observability: QueryObservability;
 };
 
 export type AskMemoryResponse = AskMemoryAnswered | AskMemoryAbstained;
+
+export type GraphNodeKind = "Actor" | "Session" | "Turn" | "Claim";
+
+export type GraphEdgeKind =
+  | "HAS_SESSION"
+  | "HAS_TURN"
+  | "HAS_CLAIM"
+  | "SUPPORTED_BY"
+  | "SUPERSEDES"
+  | "CONTRADICTS"
+  | "SUPPORTS"
+  | "DUPLICATES";
+
+export type MemoryGraphNode = {
+  id: string;
+  kind: GraphNodeKind;
+  label: string;
+  occurredAt: string | null;
+  status: ClaimStatus | null;
+  properties: Record<string, string | number>;
+};
+
+export type MemoryGraphEdge = {
+  id: string;
+  source: string;
+  target: string;
+  kind: GraphEdgeKind;
+  properties: Record<string, string | number>;
+};
+
+export type MemoryGraphResponse = {
+  actor: string;
+  nodes: MemoryGraphNode[];
+  edges: MemoryGraphEdge[];
+  timeline: {
+    start: string | null;
+    end: string | null;
+    events: string[];
+  };
+  stats: {
+    actors: number;
+    sessions: number;
+    turns: number;
+    claims: number;
+    relationships: number;
+    conflicts: number;
+  };
+};
 
 export type BenchmarkMetricSet = {
   questionAccuracy: number;

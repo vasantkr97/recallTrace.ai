@@ -11,6 +11,7 @@ import {
 import { canonicalPredicateSchema } from "./memory/claimSchema.js";
 import type { MemoryAnswerService } from "./memory/memoryAnswerService.js";
 import type { BenchmarkReportReader } from "./benchmark/benchmarkReportReader.js";
+import type { GraphService } from "./memory/graphService.js";
 
 export type AppDependencies = {
   webOrigin: string;
@@ -19,6 +20,7 @@ export type AppDependencies = {
   memory: MemoryService;
   answers: MemoryAnswerService;
   benchmark: BenchmarkReportReader;
+  graph: GraphService;
 };
 
 const conversationMessageSchema = z.object({
@@ -42,6 +44,10 @@ const askMemorySchema = z.object({
   actorName: z.string().trim().min(1).max(120),
   question: z.string().trim().min(3).max(1_000),
   asOf: z.iso.datetime({ offset: true }).optional()
+});
+
+const graphQuerySchema = z.object({
+  actor: z.string().trim().min(1).max(120)
 });
 
 export function createApp(dependencies: AppDependencies) {
@@ -155,6 +161,33 @@ export function createApp(dependencies: AppDependencies) {
   app.get("/api/benchmark", async (_request, response, next) => {
     try {
       response.json(await dependencies.benchmark.readSummary());
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/graph", async (request, response, next) => {
+    const parsed = graphQuerySchema.safeParse(request.query);
+
+    if (!parsed.success) {
+      response.status(400).json({
+        error: "Invalid graph query",
+        details: z.flattenError(parsed.error)
+      });
+      return;
+    }
+
+    try {
+      const graph = await dependencies.graph.read(parsed.data.actor);
+
+      if (!graph) {
+        response.status(404).json({
+          error: `No memory graph exists for ${parsed.data.actor}.`
+        });
+        return;
+      }
+
+      response.json(graph);
     } catch (error) {
       next(error);
     }

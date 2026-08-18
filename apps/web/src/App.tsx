@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import type {
+  AskMemoryResponse,
   CanonicalPredicate,
   MemoryDecisionView,
   RecallResult
 } from "@recalltrace/contracts";
-import { checkHealth, ingestSession, recallMemory } from "./api";
+import { askMemory, checkHealth, ingestSession, recallMemory } from "./api";
 import { MemoryResult } from "./components/MemoryResult";
 import { AskPanel } from "./components/AskPanel";
 import { BenchmarkPanel } from "./components/BenchmarkPanel";
+import { GraphExplorer } from "./components/GraphExplorer";
 
 type ActivityState = "idle" | "storing" | "recalling" | "demo";
 
@@ -31,6 +33,9 @@ export function App() {
   const [notice, setNotice] = useState("Ready to write the first memory.");
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState<boolean | null>(null);
+  const [graphRefreshKey, setGraphRefreshKey] = useState(0);
+  const [lastAnswer, setLastAnswer] = useState<AskMemoryResponse | null>(null);
+  const [demoChecks, setDemoChecks] = useState<Array<{ label: string; value: string }>>([]);
 
   const busy = activity !== "idle";
 
@@ -52,6 +57,7 @@ export function App() {
       setAsOf("");
       setDecisions(response.extractedClaims);
       setResult(response.recall);
+      setGraphRefreshKey((key) => key + 1);
       setNotice(
         `Stored ${response.extractedClaims.length} claim${response.extractedClaims.length === 1 ? "" : "s"} from ${response.storedTurns} turn.`
       );
@@ -92,11 +98,14 @@ export function App() {
     setError(null);
     setAsOf("");
     const now = Date.now();
+    const demoActor = `Maya Demo ${String(now).slice(-6)}`;
+    setActorName(demoActor);
+    setDemoChecks([]);
 
     try {
-      setNotice("Demo 1/3 · storing profile facts and the original preference…");
+      setNotice("Demo 1/8 · storing the original truth…");
       const profile = await ingestSession({
-        actorName,
+        actorName: demoActor,
         messages: [
           {
             role: "user",
@@ -106,9 +115,9 @@ export function App() {
         ]
       });
 
-      setNotice("Demo 2/3 · linking project and location context…");
+      setNotice("Demo 2/8 · linking project and location context…");
       const context = await ingestSession({
-        actorName,
+        actorName: demoActor,
         messages: [
           {
             role: "user",
@@ -118,16 +127,57 @@ export function App() {
         ]
       });
 
-      setNotice("Demo 3/3 · preserving the preference update…");
+      setNotice("Demo 3/8 · preserving the preference update…");
       const updated = await ingestSession({
-        actorName,
+        actorName: demoActor,
         messages: [
           {
             role: "user",
             content: "I now use light mode because of accessibility.",
+            occurredAt: new Date(now - 43_200_000).toISOString()
+          }
+        ]
+      });
+
+      setNotice("Demo 4/8 · retaining an out-of-order contradiction…");
+      const conflict = await ingestSession({
+        actorName: demoActor,
+        messages: [
+          {
+            role: "user",
+            content: "I prefer dark mode.",
+            occurredAt: new Date(now - 64_800_000).toISOString()
+          }
+        ]
+      });
+
+      setNotice("Demo 5/8 · adding independent supporting evidence…");
+      const support = await ingestSession({
+        actorName: demoActor,
+        messages: [
+          {
+            role: "user",
+            content: "I use light mode because it reduces eye strain.",
             occurredAt: new Date(now).toISOString()
           }
         ]
+      });
+
+      setNotice("Demo 6/8 · asking for the current truth…");
+      const currentAnswer = await askMemory({
+        actorName: demoActor,
+        question: "What theme do I prefer now?"
+      });
+      setNotice("Demo 7/8 · reconstructing historical truth…");
+      const historicalAnswer = await askMemory({
+        actorName: demoActor,
+        question: "What theme did I prefer?",
+        asOf: new Date(now - 86_400_000).toISOString()
+      });
+      setNotice("Demo 8/8 · proving safe abstention…");
+      const unsupportedAnswer = await askMemory({
+        actorName: demoActor,
+        question: "What is my favourite food?"
       });
 
       setMessage("I now use light mode because of accessibility.");
@@ -135,15 +185,31 @@ export function App() {
       setDecisions([
         ...profile.extractedClaims,
         ...context.extractedClaims,
-        ...updated.extractedClaims
+        ...updated.extractedClaims,
+        ...conflict.extractedClaims,
+        ...support.extractedClaims
       ]);
-      setResult(updated.recall);
-      setNotice("Temporal demo complete · every fact, update, and source is traceable.");
+      setResult(support.recall);
+      setLastAnswer(currentAnswer);
+      setGraphRefreshKey((key) => key + 1);
+      setDemoChecks([
+        { label: "Current", value: answerValue(currentAnswer) },
+        { label: "Historical", value: answerValue(historicalAnswer) },
+        {
+          label: "Unsupported",
+          value: unsupportedAnswer.answered ? "answered" : "abstained safely"
+        }
+      ]);
+      setNotice("Presentation demo complete · update, conflict, history, evidence, and abstention are visible.");
     } catch (caught) {
       showError(caught);
     } finally {
       setActivity("idle");
     }
+  }
+
+  function handleAnswer(response: AskMemoryResponse) {
+    setLastAnswer(response);
   }
 
   function showError(caught: unknown) {
@@ -181,7 +247,16 @@ export function App() {
         </div>
       </header>
 
-      <AskPanel actorName={actorName} />
+      <AskPanel
+        actorName={actorName}
+        externalResponse={lastAnswer}
+        onResponse={handleAnswer}
+      />
+      <GraphExplorer
+        actorName={actorName}
+        refreshKey={graphRefreshKey}
+        highlightedNodeIds={answerNodeIds(lastAnswer)}
+      />
       <BenchmarkPanel />
 
       <section className="workspace" aria-label="RecallTrace memory workspace">
@@ -192,7 +267,7 @@ export function App() {
               <h2>Build an evolving memory.</h2>
             </div>
             <button className="demo-button" onClick={runDemo} disabled={busy}>
-              <span aria-hidden="true">▶</span> Run temporal demo
+              <span aria-hidden="true">▶</span> Run presentation demo
             </button>
           </div>
 
@@ -245,6 +320,17 @@ export function App() {
             </div>
           )}
 
+          {demoChecks.length > 0 && (
+            <div className="demo-checks" aria-label="Presentation demo checks">
+              {demoChecks.map((check) => (
+                <div key={check.label}>
+                  <span>{check.label}</span>
+                  <strong>{check.value}</strong>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className={`notice ${error ? "notice-error" : ""}`} role="status">
             <span aria-hidden="true">{error ? "!" : "●"}</span>{error ?? notice}
           </div>
@@ -259,4 +345,16 @@ export function App() {
       </footer>
     </main>
   );
+}
+
+function answerNodeIds(response: AskMemoryResponse | null): string[] {
+  return response?.answered
+    ? [...new Set(response.evidence.flatMap((item) => item.graphNodeIds))]
+    : [];
+}
+
+function answerValue(response: AskMemoryResponse): string {
+  return response.answered
+    ? response.evidence.map((item) => item.claim.value).join(", ")
+    : "abstained";
 }

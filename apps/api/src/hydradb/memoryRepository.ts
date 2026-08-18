@@ -147,6 +147,7 @@ MATCH
   (session:Session)-[:HAS_TURN]->(turn)
 RETURN
   actor.name AS actor,
+  actor.id AS actorId,
   claim.id AS claimId,
   claim.predicate AS predicate,
   claim.displayLabel AS displayLabel,
@@ -154,8 +155,10 @@ RETURN
   claim.status AS status,
   claim.observedAt AS observedAt,
   turn.content AS evidenceContent,
+  turn.id AS turnId,
   turn.occurredAt AS evidenceOccurredAt,
-  session.externalId AS sessionId
+  session.externalId AS sessionId,
+  session.id AS sessionGraphId
 `;
 
 export class MemoryRepository {
@@ -249,6 +252,7 @@ export class MemoryRepository {
     }
 
     const actor = requiredString(result.records[0]!, "actor");
+    const actorGraphId = nodeId("actor", requiredNumber(result.records[0]!, "actorId"));
     const cutoff = asOf ? Date.parse(asOf) : Number.POSITIVE_INFINITY;
     const claims = result.records
       .map(mapClaim)
@@ -281,6 +285,7 @@ export class MemoryRepository {
     return {
       found: true,
       actor,
+      actorGraphId,
       predicate: current.predicate,
       current,
       previous: history[0] ?? null,
@@ -461,17 +466,24 @@ function graphId(): number {
 
 function mapClaim(record: Neo4jRecord): ClaimView {
   return {
+    graphId: nodeId("claim", requiredNumber(record, "claimId")),
     predicate: canonicalPredicateSchema.parse(requiredString(record, "predicate")),
     label: requiredString(record, "displayLabel"),
     value: requiredString(record, "value"),
     status: claimStatusSchema.parse(requiredString(record, "status")),
     observedAt: requiredString(record, "observedAt"),
     evidence: {
+      graphId: nodeId("turn", requiredNumber(record, "turnId")),
+      sessionGraphId: nodeId("session", requiredNumber(record, "sessionGraphId")),
       content: requiredString(record, "evidenceContent"),
       occurredAt: requiredString(record, "evidenceOccurredAt"),
       sessionId: requiredString(record, "sessionId")
     }
   };
+}
+
+function nodeId(kind: "actor" | "session" | "turn" | "claim", id: number): string {
+  return `${kind}:${id}`;
 }
 
 function newestFirst(left: ClaimView, right: ClaimView): number {

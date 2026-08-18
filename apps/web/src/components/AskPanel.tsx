@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { AskMemoryResponse } from "@recalltrace/contracts";
 import { askMemory } from "../api";
 
 type AskPanelProps = {
   actorName: string;
+  externalResponse?: AskMemoryResponse | null;
+  onResponse?: (response: AskMemoryResponse) => void;
 };
 
 const sampleQuestions = [
@@ -13,18 +15,26 @@ const sampleQuestions = [
   "What is my favourite food?"
 ];
 
-export function AskPanel({ actorName }: AskPanelProps) {
+export function AskPanel({ actorName, externalResponse, onResponse }: AskPanelProps) {
   const [question, setQuestion] = useState(sampleQuestions[0]!);
   const [response, setResponse] = useState<AskMemoryResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (externalResponse) {
+      setResponse(externalResponse);
+    }
+  }, [externalResponse]);
 
   async function ask() {
     setLoading(true);
     setError(null);
 
     try {
-      setResponse(await askMemory({ actorName, question }));
+      const answer = await askMemory({ actorName, question });
+      setResponse(answer);
+      onResponse?.(answer);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "The question could not be answered.");
     } finally {
@@ -82,6 +92,7 @@ function AnswerResult({ response }: { response: AskMemoryResponse }) {
           <h3>RecallTrace chose not to guess.</h3>
           <p>{response.message}</p>
         </div>
+        <Observability response={response} />
         <TraceList trace={response.trace} />
       </div>
     );
@@ -101,6 +112,8 @@ function AnswerResult({ response }: { response: AskMemoryResponse }) {
         <code>{response.temporalMode.replace("_", " ")}</code>
       </div>
 
+      <Observability response={response} />
+
       <div className="answer-evidence">
         {response.evidence.map(({ claim, graphPath }) => (
           <article key={`${claim.predicate}-${claim.evidence.sessionId}`}>
@@ -117,6 +130,19 @@ function AnswerResult({ response }: { response: AskMemoryResponse }) {
       )}
 
       <TraceList trace={response.trace} />
+    </div>
+  );
+}
+
+function Observability({ response }: { response: AskMemoryResponse }) {
+  const metrics = response.observability;
+  return (
+    <div className="observability-grid" aria-label="Query observability">
+      <div><strong>{metrics.nodesTraversed}</strong><span>nodes traversed</span></div>
+      <div><strong>{metrics.edgesTraversed}</strong><span>edges traversed</span></div>
+      <div><strong>{metrics.evidenceSelected}</strong><span>evidence selected</span></div>
+      <div><strong>{metrics.conflictsFound}</strong><span>conflicts found</span></div>
+      <div><strong>{metrics.latencyMs}</strong><span>milliseconds</span></div>
     </div>
   );
 }

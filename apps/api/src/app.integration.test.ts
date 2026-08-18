@@ -5,6 +5,7 @@ import test from "node:test";
 import type {
   AskMemoryResponse,
   IngestSessionResponse,
+  MemoryGraphResponse,
   RecallResult
 } from "@recalltrace/contracts";
 import { createApp } from "./app.js";
@@ -237,6 +238,32 @@ LIMIT 1
       );
     }
 
+    const graphResponse = await fetch(
+      `${baseUrl}/api/graph?actor=${encodeURIComponent(actorName)}`
+    );
+    assert.equal(graphResponse.status, 200);
+    const graph = (await graphResponse.json()) as MemoryGraphResponse;
+    assert.equal(graph.actor, actorName);
+    assert.ok(graph.nodes.some((node) => node.kind === "Actor"));
+    assert.ok(graph.nodes.some((node) => node.kind === "Session"));
+    assert.ok(graph.nodes.some((node) => node.kind === "Turn"));
+    assert.ok(graph.nodes.some((node) => node.kind === "Claim"));
+    assert.deepEqual(
+      new Set(graph.edges.map((edge) => edge.kind)),
+      new Set([
+        "HAS_SESSION",
+        "HAS_TURN",
+        "HAS_CLAIM",
+        "SUPPORTED_BY",
+        "SUPERSEDES",
+        "CONTRADICTS",
+        "SUPPORTS",
+        "DUPLICATES"
+      ])
+    );
+    assert.equal(graph.stats.conflicts, 1);
+    assert.ok(graph.timeline.events.length >= 5);
+
     const asOf = encodeURIComponent("2026-08-15T00:00:00.000Z");
     const historicalResponse = await fetch(
       `${baseUrl}/api/recall?actor=${encodeURIComponent(actorName)}&predicate=preferred_theme&asOf=${asOf}`
@@ -301,6 +328,10 @@ test("answers grounded natural-language questions and abstains safely", async ()
       assert.match(current.answer, /light mode/i);
       assert.equal(current.coverage.ratio, 1);
       assert.equal(current.evidence[0]?.claim.evidence.content, "I now use light mode because of accessibility.");
+      assert.equal(current.evidence[0]?.graphNodeIds.length, 4);
+      assert.ok(current.observability.nodesTraversed >= 4);
+      assert.equal(current.observability.evidenceSelected, 1);
+      assert.ok(current.observability.latencyMs >= 0);
     }
 
     const previous = await postQuestion(

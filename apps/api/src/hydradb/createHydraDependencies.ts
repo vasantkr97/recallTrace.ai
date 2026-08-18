@@ -10,6 +10,8 @@ import { TemporalDecisionEngine } from "../memory/temporalDecisionEngine.js";
 import { ClaimRepository } from "./claimRepository.js";
 import { HydraConnection } from "./hydraConnection.js";
 import { MemoryRepository } from "./memoryRepository.js";
+import { GraphRepository } from "./graphRepository.js";
+import { GraphService } from "../memory/graphService.js";
 
 export function createHydraDependencies() {
   const environment = readEnvironment();
@@ -23,6 +25,7 @@ export function createHydraDependencies() {
   const questions = new QuestionAnalyzer();
   const seeds = new CanonicalSeedProvider();
   const answers = new MemoryAnswerService(memory, questions, seeds, entities);
+  const graph = new GraphService(new GraphRepository(connection), entities);
   const benchmark = new BenchmarkReportReader();
 
   return {
@@ -32,6 +35,7 @@ export function createHydraDependencies() {
     claims,
     memory,
     answers,
+    graph,
     benchmark
   };
 }
