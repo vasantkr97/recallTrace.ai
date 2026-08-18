@@ -13,7 +13,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspaces --if-present",
+    "dev": "concurrently --kill-others --names api,web --prefix-colors green,cyan \"npm run dev --workspace @recalltrace/api\" \"npm run dev --workspace @recalltrace/web\"",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
@@ -21,6 +21,10 @@
     "hydra:down": "docker compose --env-file .env -f infra/docker-compose.yml down",
     "hydra:logs": "docker compose --env-file .env -f infra/docker-compose.yml logs hydradb",
     "milestone:1": "npm run milestone:1 --workspace @recalltrace/api",
-    "milestone:1:verify": "npm run milestone:1:verify --workspace @recalltrace/api"
+    "milestone:1:verify": "npm run milestone:1:verify --workspace @recalltrace/api",
+    "milestone:2": "npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

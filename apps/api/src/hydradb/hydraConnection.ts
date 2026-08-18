@@ -36,7 +36,22 @@ export class HydraConnection {
   }
 
   async verifyConnectivity(): Promise<void> {
-    await this.driver.verifyConnectivity({ database: this.database });
+    let lastError: unknown;
+
+    for (let attempt = 1; attempt <= 5; attempt += 1) {
+      try {
+        await this.driver.verifyConnectivity({ database: this.database });
+        return;
+      } catch (error) {
+        lastError = error;
+
+        if (attempt < 5) {
+          await new Promise((resolve) => setTimeout(resolve, attempt * 250));
+        }
+      }
+    }
+
+    throw lastError;
   }
 
   async read<T extends RecordShape = RecordShape>(

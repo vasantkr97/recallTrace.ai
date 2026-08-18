@@ -15,6 +15,7 @@ dotenv.config({
 const environmentSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   API_PORT: z.coerce.number().int().positive().default(4000),
+  WEB_ORIGIN: z.string().url().default("http://localhost:5173"),
   HYDRADB_BOLT_URL: z.string().startsWith("bolt://"),
   HYDRADB_USERNAME: z.string().min(1).default("neo4j"),
   HYDRADB_AUTH_TOKEN: z.string().min(32),

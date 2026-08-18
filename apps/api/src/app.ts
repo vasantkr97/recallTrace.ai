@@ -1,16 +1,42 @@
+import type { RecallNotFound } from "@recalltrace/contracts";
+import cors from "cors";
 import express, { type NextFunction, type Request, type Response } from "express";
+import { z } from "zod";
 import type { ClaimRepository } from "./hydradb/claimRepository.js";
 import type { HydraConnection } from "./hydradb/hydraConnection.js";
+import {
+  MemoryExtractionError,
+  type MemoryService
+} from "./memory/memoryService.js";
 
 export type AppDependencies = {
+  webOrigin: string;
   connection: HydraConnection;
   claims: ClaimRepository;
+  memory: MemoryService;
 };
+
+const conversationMessageSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().trim().min(1).max(10_000),
+  occurredAt: z.iso.datetime({ offset: true }).optional()
+});
+
+const ingestSessionSchema = z.object({
+  actorName: z.string().trim().min(1).max(120),
+  messages: z.array(conversationMessageSchema).min(1).max(100)
+});
+
+const recallQuerySchema = z.object({
+  actor: z.string().trim().min(1).max(120),
+  predicate: z.string().trim().min(1).max(120).default("preferred_theme")
+});
 
 export function createApp(dependencies: AppDependencies) {
   const app = express();
 
   app.disable("x-powered-by");
+  app.use(cors({ origin: dependencies.webOrigin }));
   app.use(express.json({ limit: "1mb" }));
 
   app.get("/health", async (_request, response, next) => {
@@ -39,6 +65,61 @@ export function createApp(dependencies: AppDependencies) {
     }
   });
 
+  app.post("/api/sessions", async (request, response, next) => {
+    const parsed = ingestSessionSchema.safeParse(request.body);
+
+    if (!parsed.success) {
+      response.status(400).json({
+        error: "Invalid conversation session",
+        details: z.flattenError(parsed.error)
+      });
+      return;
+    }
+
+    try {
+      const result = await dependencies.memory.ingestSession(
+        parsed.data
+      );
+      response.status(201).json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/recall", async (request, response, next) => {
+    const parsed = recallQuerySchema.safeParse(request.query);
+
+    if (!parsed.success) {
+      response.status(400).json({
+        error: "Invalid recall query",
+        details: z.flattenError(parsed.error)
+      });
+      return;
+    }
+
+    try {
+      const result = await dependencies.memory.recall(
+        parsed.data.actor,
+        parsed.data.predicate
+      );
+
+      if (!result) {
+        const notFound: RecallNotFound = {
+          found: false,
+          actor: parsed.data.actor,
+          predicate: parsed.data.predicate,
+          reason: "NO_MATCHING_MEMORY"
+        };
+        response.status(404).json(notFound);
+        return;
+      }
+
+      response.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   app.use(
     (
       error: unknown,
@@ -47,7 +128,8 @@ export function createApp(dependencies: AppDependencies) {
       _next: NextFunction
     ) => {
       const message = error instanceof Error ? error.message : "Unknown error";
-      response.status(500).json({ error: message });
+      const status = error instanceof MemoryExtractionError ? 422 : 500;
+      response.status(status).json({ error: message });
     }
   );
 
