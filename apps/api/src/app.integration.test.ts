@@ -44,6 +44,11 @@ test("serves HydraDB health and the Milestone 1 traversal through Express", asyn
     assert.equal(history.current, "light mode");
     assert.equal(history.previous, "dark mode");
     assert.equal(history.relationship, "SUPERSEDES");
+
+    const benchmarkResponse = await fetch(`${baseUrl}/api/benchmark`);
+    assert.equal(benchmarkResponse.status, 200);
+    const benchmark = (await benchmarkResponse.json()) as Record<string, unknown>;
+    assert.equal(benchmark.questionCount, 60);
   } finally {
     if (server.listening) {
       await new Promise<void>((resolve, reject) => {

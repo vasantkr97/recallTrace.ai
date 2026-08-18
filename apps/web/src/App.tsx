@@ -7,6 +7,7 @@ import type {
 import { checkHealth, ingestSession, recallMemory } from "./api";
 import { MemoryResult } from "./components/MemoryResult";
 import { AskPanel } from "./components/AskPanel";
+import { BenchmarkPanel } from "./components/BenchmarkPanel";
 
 type ActivityState = "idle" | "storing" | "recalling" | "demo";
 
@@ -181,6 +182,7 @@ export function App() {
       </header>
 
       <AskPanel actorName={actorName} />
+      <BenchmarkPanel />
 
       <section className="workspace" aria-label="RecallTrace memory workspace">
         <div className="composer-card">

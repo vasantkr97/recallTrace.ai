@@ -1,4 +1,5 @@
 import { readEnvironment } from "../config/environment.js";
+import { BenchmarkReportReader } from "../benchmark/benchmarkReportReader.js";
 import { StructuredClaimExtractor } from "../memory/claimExtractor.js";
 import { EntityResolver } from "../memory/entityResolver.js";
 import { MemoryService } from "../memory/memoryService.js";
@@ -22,6 +23,7 @@ export function createHydraDependencies() {
   const questions = new QuestionAnalyzer();
   const seeds = new CanonicalSeedProvider();
   const answers = new MemoryAnswerService(memory, questions, seeds, entities);
+  const benchmark = new BenchmarkReportReader();
 
   return {
     environment,
@@ -29,6 +31,7 @@ export function createHydraDependencies() {
     connection,
     claims,
     memory,
-    answers
+    answers,
+    benchmark
   };
 }

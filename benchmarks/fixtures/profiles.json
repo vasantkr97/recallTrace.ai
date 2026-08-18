@@ -1,0 +1,65 @@
+{
+  "version": "1.0.0",
+  "profiles": [
+    {
+      "id": "maya",
+      "actor": "Maya",
+      "originalTheme": "dark mode",
+      "currentTheme": "light mode",
+      "originalEmployer": "Acme",
+      "currentEmployer": "Nova Labs",
+      "currentCity": "Bengaluru",
+      "destinationCity": "London",
+      "project": "Atlas",
+      "goal": "launch RecallTrace"
+    },
+    {
+      "id": "arjun",
+      "actor": "Arjun",
+      "originalTheme": "light mode",
+      "currentTheme": "dark mode",
+      "originalEmployer": "BrightDesk",
+      "currentEmployer": "Orbit Systems",
+      "currentCity": "Pune",
+      "destinationCity": "Berlin",
+      "project": "Beacon",
+      "goal": "publish the memory research"
+    },
+    {
+      "id": "lena",
+      "actor": "Lena",
+      "originalTheme": "dark mode",
+      "currentTheme": "light mode",
+      "originalEmployer": "Northstar",
+      "currentEmployer": "Helio",
+      "currentCity": "Madrid",
+      "destinationCity": "Lisbon",
+      "project": "Compass",
+      "goal": "ship the accessibility toolkit"
+    },
+    {
+      "id": "omar",
+      "actor": "Omar",
+      "originalTheme": "light mode",
+      "currentTheme": "dark mode",
+      "originalEmployer": "Cedar Labs",
+      "currentEmployer": "Quanta",
+      "currentCity": "Dubai",
+      "destinationCity": "Toronto",
+      "project": "Signal",
+      "goal": "mentor ten engineers"
+    },
+    {
+      "id": "sofia",
+      "actor": "Sofia",
+      "originalTheme": "dark mode",
+      "currentTheme": "light mode",
+      "originalEmployer": "PixelForge",
+      "currentEmployer": "Lumen",
+      "currentCity": "Rome",
+      "destinationCity": "Amsterdam",
+      "project": "Mosaic",
+      "goal": "start a climate fund"
+    }
+  ]
+}

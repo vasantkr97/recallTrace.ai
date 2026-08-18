@@ -1,0 +1,511 @@
+{
+  "metadata": {
+    "suite": "smoke",
+    "fixtureVersion": "1.0.0",
+    "generatedAt": "2026-08-18T06:11:18.914Z",
+    "profileCount": 1,
+    "questionCount": 12,
+    "datasetLabel": "RecallTrace fixed synthetic temporal-memory suite v1",
+    "methodology": "Both systems receive identical conversations, timestamps, questions, canonical extraction rules, and expected values. Only retrieval architecture differs.",
+    "limitations": [
+      "This is a deterministic synthetic development suite, not a public LongMemEval result.",
+      "The vector baseline uses disclosed hashed token vectors rather than a commercial embedding model.",
+      "Latency is measured on one local machine and should be treated as directional."
+    ]
+  },
+  "recallTrace": {
+    "system": "RecallTrace",
+    "description": "Canonical temporal claims retrieved through bounded HydraDB graph paths.",
+    "metrics": {
+      "questionAccuracy": 1,
+      "temporalAccuracy": 1,
+      "abstentionAccuracy": 1,
+      "evidencePrecision": 1,
+      "multiPartCoverage": 1,
+      "conflictDetectionAccuracy": 1,
+      "averageLatencyMs": 59.0909
+    },
+    "cases": [
+      {
+        "questionId": "maya-current-theme",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 1,
+        "latencyMs": 54.464,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-previous-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 1,
+        "latencyMs": 48.495,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-as-of-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 47.857,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-current-employer",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "employer": "Nova Labs"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 48.961,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Nova Labs"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-previous-employer",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "employer": "Acme"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 41.612,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Acme"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-current-city",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "current_city": "Bengaluru"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 39.947,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Bengaluru"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-destination",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "destination_city": "London"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 37.068,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "destination_city": "London"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-project",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "active_project": "Atlas"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 38.815,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "active_project": "Atlas"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-goal",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "goal": "launch RecallTrace"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 41.187,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "goal": "launch RecallTrace"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-city-project",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "active_project": "Atlas",
+          "current_city": "Bengaluru"
+        },
+        "evidenceCount": 2,
+        "conflictCount": 0,
+        "latencyMs": 71.958,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Bengaluru",
+          "active_project": "Atlas"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 2
+      },
+      {
+        "questionId": "maya-absent-food",
+        "category": "absent",
+        "answered": false,
+        "values": {},
+        "evidenceCount": 0,
+        "conflictCount": 0,
+        "latencyMs": 0.444,
+        "reason": "NO_SUPPORTING_EVIDENCE",
+        "correct": true,
+        "expectedAnswered": false,
+        "expectedValues": {},
+        "matchedValues": 0,
+        "expectedValueCount": 0
+      },
+      {
+        "questionId": "maya-profile-summary",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "destination_city": "London",
+          "active_project": "Atlas",
+          "preferred_theme": "light mode",
+          "employer": "Nova Labs",
+          "current_city": "Bengaluru",
+          "goal": "launch RecallTrace"
+        },
+        "evidenceCount": 6,
+        "conflictCount": 1,
+        "latencyMs": 238.283,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode",
+          "employer": "Nova Labs",
+          "current_city": "Bengaluru",
+          "destination_city": "London",
+          "active_project": "Atlas",
+          "goal": "launch RecallTrace"
+        },
+        "matchedValues": 6,
+        "expectedValueCount": 6
+      }
+    ]
+  },
+  "vectorBaseline": {
+    "system": "Vector-only cosine baseline",
+    "description": "Raw turns embedded into 512-dimensional hashed token vectors; top-4 cosine retrieval with timestamp filtering and no graph relationships.",
+    "metrics": {
+      "questionAccuracy": 0.75,
+      "temporalAccuracy": 0.6667,
+      "abstentionAccuracy": 1,
+      "evidencePrecision": 0.7857,
+      "multiPartCoverage": 0.5,
+      "conflictDetectionAccuracy": 0,
+      "averageLatencyMs": 0.8142
+    },
+    "cases": [
+      {
+        "questionId": "maya-current-theme",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 3.591,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-previous-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.823,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-as-of-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.78,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-current-employer",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "employer": "Nova Labs"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.755,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Nova Labs"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-previous-employer",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "employer": "Acme"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.55,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Acme"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-current-city",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "current_city": "Bengaluru"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.616,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Bengaluru"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-destination",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "destination_city": "London"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.528,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "destination_city": "London"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-project",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "active_project": "Atlas"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.583,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "active_project": "Atlas"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-goal",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "goal": "launch RecallTrace"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.404,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "goal": "launch RecallTrace"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-city-project",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "active_project": "Atlas",
+          "current_city": "Bengaluru"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.635,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Bengaluru",
+          "active_project": "Atlas"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 2
+      },
+      {
+        "questionId": "maya-absent-food",
+        "category": "absent",
+        "answered": false,
+        "values": {},
+        "evidenceCount": 0,
+        "conflictCount": 0,
+        "latencyMs": 0.072,
+        "reason": "NO_VECTOR_MATCH",
+        "correct": true,
+        "expectedAnswered": false,
+        "expectedValues": {},
+        "matchedValues": 0,
+        "expectedValueCount": 0
+      },
+      {
+        "questionId": "maya-profile-summary",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode",
+          "employer": "Acme",
+          "goal": "launch RecallTrace"
+        },
+        "evidenceCount": 3,
+        "conflictCount": 0,
+        "latencyMs": 0.434,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode",
+          "employer": "Nova Labs",
+          "current_city": "Bengaluru",
+          "destination_city": "London",
+          "active_project": "Atlas",
+          "goal": "launch RecallTrace"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 6
+      }
+    ]
+  },
+  "delta": {
+    "questionAccuracy": 0.25,
+    "temporalAccuracy": 0.3333,
+    "abstentionAccuracy": 0,
+    "evidencePrecision": 0.2143,
+    "multiPartCoverage": 0.5,
+    "conflictDetectionAccuracy": 1,
+    "averageLatencyMs": 58.2767
+  },
+  "failureAnalysis": {
+    "recallTraceFailures": 0,
+    "vectorBaselineFailures": 3,
+    "vectorFailuresByCategory": {
+      "current": 1,
+      "temporal": 1,
+      "multi_part": 1
+    }
+  }
+}

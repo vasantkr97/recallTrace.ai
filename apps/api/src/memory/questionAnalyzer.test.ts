@@ -29,3 +29,10 @@ test("maps a generic preference question to the canonical theme slot", () => {
   assert.deepEqual(result.predicates, ["preferred_theme"]);
   assert.equal(result.temporalMode, "previous");
 });
+
+test("recognizes previous when it modifies a memory slot", () => {
+  const analyzer = new QuestionAnalyzer();
+  const result = analyzer.analyze("Who was Maya's previous employer?");
+  assert.deepEqual(result.predicates, ["employer"]);
+  assert.equal(result.temporalMode, "previous");
+});

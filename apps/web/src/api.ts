@@ -1,6 +1,7 @@
 import type {
   AskMemoryRequest,
   AskMemoryResponse,
+  BenchmarkSummaryResponse,
   CanonicalPredicate,
   IngestSessionRequest,
   IngestSessionResponse,
@@ -55,6 +56,10 @@ export async function askMemory(
     headers: { "content-type": "application/json" },
     body: JSON.stringify(request)
   });
+}
+
+export async function getBenchmarkSummary(): Promise<BenchmarkSummaryResponse> {
+  return requestJson<BenchmarkSummaryResponse>(`${apiUrl}/api/benchmark`);
 }
 
 async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {

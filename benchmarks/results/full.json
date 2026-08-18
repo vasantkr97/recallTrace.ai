@@ -1,0 +1,2299 @@
+{
+  "metadata": {
+    "suite": "full",
+    "fixtureVersion": "1.0.0",
+    "generatedAt": "2026-08-18T06:11:38.930Z",
+    "profileCount": 5,
+    "questionCount": 60,
+    "datasetLabel": "RecallTrace fixed synthetic temporal-memory suite v1",
+    "methodology": "Both systems receive identical conversations, timestamps, questions, canonical extraction rules, and expected values. Only retrieval architecture differs.",
+    "limitations": [
+      "This is a deterministic synthetic development suite, not a public LongMemEval result.",
+      "The vector baseline uses disclosed hashed token vectors rather than a commercial embedding model.",
+      "Latency is measured on one local machine and should be treated as directional."
+    ]
+  },
+  "recallTrace": {
+    "system": "RecallTrace",
+    "description": "Canonical temporal claims retrieved through bounded HydraDB graph paths.",
+    "metrics": {
+      "questionAccuracy": 1,
+      "temporalAccuracy": 1,
+      "abstentionAccuracy": 1,
+      "evidencePrecision": 1,
+      "multiPartCoverage": 1,
+      "conflictDetectionAccuracy": 1,
+      "averageLatencyMs": 57.6766
+    },
+    "cases": [
+      {
+        "questionId": "maya-current-theme",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 1,
+        "latencyMs": 62.121,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-previous-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 1,
+        "latencyMs": 53.978,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-as-of-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 55.594,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-current-employer",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "employer": "Nova Labs"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 54.788,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Nova Labs"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-previous-employer",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "employer": "Acme"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 47.769,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Acme"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-current-city",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "current_city": "Bengaluru"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 48.391,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Bengaluru"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-destination",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "destination_city": "London"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 43.389,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "destination_city": "London"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-project",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "active_project": "Atlas"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 41.313,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "active_project": "Atlas"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-goal",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "goal": "launch RecallTrace"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 43.768,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "goal": "launch RecallTrace"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-city-project",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "active_project": "Atlas",
+          "current_city": "Bengaluru"
+        },
+        "evidenceCount": 2,
+        "conflictCount": 0,
+        "latencyMs": 78.152,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Bengaluru",
+          "active_project": "Atlas"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 2
+      },
+      {
+        "questionId": "maya-absent-food",
+        "category": "absent",
+        "answered": false,
+        "values": {},
+        "evidenceCount": 0,
+        "conflictCount": 0,
+        "latencyMs": 0.299,
+        "reason": "NO_SUPPORTING_EVIDENCE",
+        "correct": true,
+        "expectedAnswered": false,
+        "expectedValues": {},
+        "matchedValues": 0,
+        "expectedValueCount": 0
+      },
+      {
+        "questionId": "maya-profile-summary",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "destination_city": "London",
+          "active_project": "Atlas",
+          "preferred_theme": "light mode",
+          "employer": "Nova Labs",
+          "current_city": "Bengaluru",
+          "goal": "launch RecallTrace"
+        },
+        "evidenceCount": 6,
+        "conflictCount": 1,
+        "latencyMs": 246.074,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode",
+          "employer": "Nova Labs",
+          "current_city": "Bengaluru",
+          "destination_city": "London",
+          "active_project": "Atlas",
+          "goal": "launch RecallTrace"
+        },
+        "matchedValues": 6,
+        "expectedValueCount": 6
+      },
+      {
+        "questionId": "arjun-current-theme",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 1,
+        "latencyMs": 44.375,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-previous-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 1,
+        "latencyMs": 47.482,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-as-of-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 144.884,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-current-employer",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "employer": "Orbit Systems"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 27.17,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Orbit Systems"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-previous-employer",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "employer": "BrightDesk"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 19.807,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "BrightDesk"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-current-city",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "current_city": "Pune"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 19.21,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Pune"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-destination",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "destination_city": "Berlin"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 18.56,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "destination_city": "Berlin"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-project",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "active_project": "Beacon"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 16.351,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "active_project": "Beacon"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-goal",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "goal": "publish the memory research"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 17.905,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "goal": "publish the memory research"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-city-project",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "active_project": "Beacon",
+          "current_city": "Pune"
+        },
+        "evidenceCount": 2,
+        "conflictCount": 0,
+        "latencyMs": 32.038,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Pune",
+          "active_project": "Beacon"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 2
+      },
+      {
+        "questionId": "arjun-absent-food",
+        "category": "absent",
+        "answered": false,
+        "values": {},
+        "evidenceCount": 0,
+        "conflictCount": 0,
+        "latencyMs": 0.063,
+        "reason": "NO_SUPPORTING_EVIDENCE",
+        "correct": true,
+        "expectedAnswered": false,
+        "expectedValues": {},
+        "matchedValues": 0,
+        "expectedValueCount": 0
+      },
+      {
+        "questionId": "arjun-profile-summary",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "destination_city": "Berlin",
+          "active_project": "Beacon",
+          "preferred_theme": "dark mode",
+          "employer": "Orbit Systems",
+          "current_city": "Pune",
+          "goal": "publish the memory research"
+        },
+        "evidenceCount": 6,
+        "conflictCount": 1,
+        "latencyMs": 104.476,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode",
+          "employer": "Orbit Systems",
+          "current_city": "Pune",
+          "destination_city": "Berlin",
+          "active_project": "Beacon",
+          "goal": "publish the memory research"
+        },
+        "matchedValues": 6,
+        "expectedValueCount": 6
+      },
+      {
+        "questionId": "lena-current-theme",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 1,
+        "latencyMs": 50.814,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-previous-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 1,
+        "latencyMs": 47.362,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-as-of-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 48.659,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-current-employer",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "employer": "Helio"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 50.091,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Helio"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-previous-employer",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "employer": "Northstar"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 44.879,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Northstar"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-current-city",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "current_city": "Madrid"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 40.478,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Madrid"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-destination",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "destination_city": "Lisbon"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 43.541,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "destination_city": "Lisbon"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-project",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "active_project": "Compass"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 40.419,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "active_project": "Compass"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-goal",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "goal": "ship the accessibility toolkit"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 53.929,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "goal": "ship the accessibility toolkit"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-city-project",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "active_project": "Compass",
+          "current_city": "Madrid"
+        },
+        "evidenceCount": 2,
+        "conflictCount": 0,
+        "latencyMs": 87.995,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Madrid",
+          "active_project": "Compass"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 2
+      },
+      {
+        "questionId": "lena-absent-food",
+        "category": "absent",
+        "answered": false,
+        "values": {},
+        "evidenceCount": 0,
+        "conflictCount": 0,
+        "latencyMs": 0.098,
+        "reason": "NO_SUPPORTING_EVIDENCE",
+        "correct": true,
+        "expectedAnswered": false,
+        "expectedValues": {},
+        "matchedValues": 0,
+        "expectedValueCount": 0
+      },
+      {
+        "questionId": "lena-profile-summary",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "destination_city": "Lisbon",
+          "active_project": "Compass",
+          "preferred_theme": "light mode",
+          "employer": "Helio",
+          "current_city": "Madrid",
+          "goal": "ship the accessibility toolkit"
+        },
+        "evidenceCount": 6,
+        "conflictCount": 1,
+        "latencyMs": 236.963,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode",
+          "employer": "Helio",
+          "current_city": "Madrid",
+          "destination_city": "Lisbon",
+          "active_project": "Compass",
+          "goal": "ship the accessibility toolkit"
+        },
+        "matchedValues": 6,
+        "expectedValueCount": 6
+      },
+      {
+        "questionId": "omar-current-theme",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 1,
+        "latencyMs": 47.641,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-previous-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 1,
+        "latencyMs": 46.129,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-as-of-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 45.495,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-current-employer",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "employer": "Quanta"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 44.986,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Quanta"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-previous-employer",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "employer": "Cedar Labs"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 40.48,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Cedar Labs"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-current-city",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "current_city": "Dubai"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 39.215,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Dubai"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-destination",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "destination_city": "Toronto"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 41.163,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "destination_city": "Toronto"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-project",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "active_project": "Signal"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 35.604,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "active_project": "Signal"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-goal",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "goal": "mentor ten engineers"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 36.232,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "goal": "mentor ten engineers"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-city-project",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "active_project": "Signal",
+          "current_city": "Dubai"
+        },
+        "evidenceCount": 2,
+        "conflictCount": 0,
+        "latencyMs": 67.697,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Dubai",
+          "active_project": "Signal"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 2
+      },
+      {
+        "questionId": "omar-absent-food",
+        "category": "absent",
+        "answered": false,
+        "values": {},
+        "evidenceCount": 0,
+        "conflictCount": 0,
+        "latencyMs": 0.095,
+        "reason": "NO_SUPPORTING_EVIDENCE",
+        "correct": true,
+        "expectedAnswered": false,
+        "expectedValues": {},
+        "matchedValues": 0,
+        "expectedValueCount": 0
+      },
+      {
+        "questionId": "omar-profile-summary",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "destination_city": "Toronto",
+          "active_project": "Signal",
+          "preferred_theme": "dark mode",
+          "employer": "Quanta",
+          "current_city": "Dubai",
+          "goal": "mentor ten engineers"
+        },
+        "evidenceCount": 6,
+        "conflictCount": 1,
+        "latencyMs": 224.697,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode",
+          "employer": "Quanta",
+          "current_city": "Dubai",
+          "destination_city": "Toronto",
+          "active_project": "Signal",
+          "goal": "mentor ten engineers"
+        },
+        "matchedValues": 6,
+        "expectedValueCount": 6
+      },
+      {
+        "questionId": "sofia-current-theme",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 1,
+        "latencyMs": 49.757,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-previous-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 1,
+        "latencyMs": 66.975,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-as-of-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 49.236,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-current-employer",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "employer": "Lumen"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 50.006,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Lumen"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-previous-employer",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "employer": "PixelForge"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 42.955,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "PixelForge"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-current-city",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "current_city": "Rome"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 42.579,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Rome"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-destination",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "destination_city": "Amsterdam"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 42.131,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "destination_city": "Amsterdam"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-project",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "active_project": "Mosaic"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 40.312,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "active_project": "Mosaic"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-goal",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "goal": "start a climate fund"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 41.832,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "goal": "start a climate fund"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-city-project",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "active_project": "Mosaic",
+          "current_city": "Rome"
+        },
+        "evidenceCount": 2,
+        "conflictCount": 0,
+        "latencyMs": 81.914,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Rome",
+          "active_project": "Mosaic"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 2
+      },
+      {
+        "questionId": "sofia-absent-food",
+        "category": "absent",
+        "answered": false,
+        "values": {},
+        "evidenceCount": 0,
+        "conflictCount": 0,
+        "latencyMs": 0.095,
+        "reason": "NO_SUPPORTING_EVIDENCE",
+        "correct": true,
+        "expectedAnswered": false,
+        "expectedValues": {},
+        "matchedValues": 0,
+        "expectedValueCount": 0
+      },
+      {
+        "questionId": "sofia-profile-summary",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "destination_city": "Amsterdam",
+          "active_project": "Mosaic",
+          "preferred_theme": "light mode",
+          "employer": "Lumen",
+          "current_city": "Rome",
+          "goal": "start a climate fund"
+        },
+        "evidenceCount": 6,
+        "conflictCount": 1,
+        "latencyMs": 270.184,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode",
+          "employer": "Lumen",
+          "current_city": "Rome",
+          "destination_city": "Amsterdam",
+          "active_project": "Mosaic",
+          "goal": "start a climate fund"
+        },
+        "matchedValues": 6,
+        "expectedValueCount": 6
+      }
+    ]
+  },
+  "vectorBaseline": {
+    "system": "Vector-only cosine baseline",
+    "description": "Raw turns embedded into 512-dimensional hashed token vectors; top-4 cosine retrieval with timestamp filtering and no graph relationships.",
+    "metrics": {
+      "questionAccuracy": 0.7167,
+      "temporalAccuracy": 0.6667,
+      "abstentionAccuracy": 1,
+      "evidencePrecision": 0.7286,
+      "multiPartCoverage": 0.45,
+      "conflictDetectionAccuracy": 0,
+      "averageLatencyMs": 0.4488
+    },
+    "cases": [
+      {
+        "questionId": "maya-current-theme",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 2.865,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-previous-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 1.131,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-as-of-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.886,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-current-employer",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "employer": "Nova Labs"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 1.284,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Nova Labs"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-previous-employer",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "employer": "Acme"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.966,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Acme"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-current-city",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "current_city": "Bengaluru"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 1.081,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Bengaluru"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-destination",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "destination_city": "London"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.79,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "destination_city": "London"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-project",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "active_project": "Atlas"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 1.084,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "active_project": "Atlas"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-goal",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "goal": "launch RecallTrace"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.653,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "goal": "launch RecallTrace"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "maya-city-project",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "active_project": "Atlas",
+          "current_city": "Bengaluru"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.383,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Bengaluru",
+          "active_project": "Atlas"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 2
+      },
+      {
+        "questionId": "maya-absent-food",
+        "category": "absent",
+        "answered": false,
+        "values": {},
+        "evidenceCount": 0,
+        "conflictCount": 0,
+        "latencyMs": 0.034,
+        "reason": "NO_VECTOR_MATCH",
+        "correct": true,
+        "expectedAnswered": false,
+        "expectedValues": {},
+        "matchedValues": 0,
+        "expectedValueCount": 0
+      },
+      {
+        "questionId": "maya-profile-summary",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode",
+          "employer": "Acme",
+          "goal": "launch RecallTrace"
+        },
+        "evidenceCount": 3,
+        "conflictCount": 0,
+        "latencyMs": 0.404,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode",
+          "employer": "Nova Labs",
+          "current_city": "Bengaluru",
+          "destination_city": "London",
+          "active_project": "Atlas",
+          "goal": "launch RecallTrace"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 6
+      },
+      {
+        "questionId": "arjun-current-theme",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.36,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-previous-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.268,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-as-of-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.568,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-current-employer",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "employer": "BrightDesk"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.621,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Orbit Systems"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-previous-employer",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "employer": "BrightDesk"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.407,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "BrightDesk"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-current-city",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "current_city": "Pune"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.245,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Pune"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-destination",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "destination_city": "Berlin"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.217,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "destination_city": "Berlin"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-project",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "active_project": "Beacon"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.221,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "active_project": "Beacon"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-goal",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "goal": "publish the memory research"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.327,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "goal": "publish the memory research"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "arjun-city-project",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "active_project": "Beacon",
+          "current_city": "Pune"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.267,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Pune",
+          "active_project": "Beacon"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 2
+      },
+      {
+        "questionId": "arjun-absent-food",
+        "category": "absent",
+        "answered": false,
+        "values": {},
+        "evidenceCount": 0,
+        "conflictCount": 0,
+        "latencyMs": 0.018,
+        "reason": "NO_VECTOR_MATCH",
+        "correct": true,
+        "expectedAnswered": false,
+        "expectedValues": {},
+        "matchedValues": 0,
+        "expectedValueCount": 0
+      },
+      {
+        "questionId": "arjun-profile-summary",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode",
+          "employer": "BrightDesk",
+          "goal": "publish the memory research"
+        },
+        "evidenceCount": 3,
+        "conflictCount": 0,
+        "latencyMs": 0.337,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode",
+          "employer": "Orbit Systems",
+          "current_city": "Pune",
+          "destination_city": "Berlin",
+          "active_project": "Beacon",
+          "goal": "publish the memory research"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 6
+      },
+      {
+        "questionId": "lena-current-theme",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.247,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-previous-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.238,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-as-of-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.234,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-current-employer",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "employer": "Helio"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.39,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Helio"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-previous-employer",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "employer": "Northstar"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.24,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Northstar"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-current-city",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "current_city": "Madrid"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.319,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Madrid"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-destination",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "destination_city": "Lisbon"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.607,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "destination_city": "Lisbon"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-project",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "active_project": "Compass"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.446,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "active_project": "Compass"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-goal",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "goal": "ship the accessibility toolkit"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.672,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "goal": "ship the accessibility toolkit"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "lena-city-project",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "active_project": "Compass",
+          "current_city": "Madrid"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.662,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Madrid",
+          "active_project": "Compass"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 2
+      },
+      {
+        "questionId": "lena-absent-food",
+        "category": "absent",
+        "answered": false,
+        "values": {},
+        "evidenceCount": 0,
+        "conflictCount": 0,
+        "latencyMs": 0.024,
+        "reason": "NO_VECTOR_MATCH",
+        "correct": true,
+        "expectedAnswered": false,
+        "expectedValues": {},
+        "matchedValues": 0,
+        "expectedValueCount": 0
+      },
+      {
+        "questionId": "lena-profile-summary",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode",
+          "employer": "Northstar",
+          "goal": "ship the accessibility toolkit"
+        },
+        "evidenceCount": 3,
+        "conflictCount": 0,
+        "latencyMs": 0.33,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode",
+          "employer": "Helio",
+          "current_city": "Madrid",
+          "destination_city": "Lisbon",
+          "active_project": "Compass",
+          "goal": "ship the accessibility toolkit"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 6
+      },
+      {
+        "questionId": "omar-current-theme",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.468,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-previous-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.297,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-as-of-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.254,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-current-employer",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "employer": "Quanta"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.261,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Quanta"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-previous-employer",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "employer": "Cedar Labs"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.401,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Cedar Labs"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-current-city",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "current_city": "Dubai"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.639,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Dubai"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-destination",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "destination_city": "Toronto"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.358,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "destination_city": "Toronto"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-project",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "active_project": "Signal"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.255,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "active_project": "Signal"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-goal",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "goal": "mentor ten engineers"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.336,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "goal": "mentor ten engineers"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "omar-city-project",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "active_project": "Signal",
+          "current_city": "Dubai"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.323,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Dubai",
+          "active_project": "Signal"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 2
+      },
+      {
+        "questionId": "omar-absent-food",
+        "category": "absent",
+        "answered": false,
+        "values": {},
+        "evidenceCount": 0,
+        "conflictCount": 0,
+        "latencyMs": 0.018,
+        "reason": "NO_VECTOR_MATCH",
+        "correct": true,
+        "expectedAnswered": false,
+        "expectedValues": {},
+        "matchedValues": 0,
+        "expectedValueCount": 0
+      },
+      {
+        "questionId": "omar-profile-summary",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode",
+          "employer": "Cedar Labs",
+          "goal": "mentor ten engineers"
+        },
+        "evidenceCount": 3,
+        "conflictCount": 0,
+        "latencyMs": 0.453,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode",
+          "employer": "Quanta",
+          "current_city": "Dubai",
+          "destination_city": "Toronto",
+          "active_project": "Signal",
+          "goal": "mentor ten engineers"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 6
+      },
+      {
+        "questionId": "sofia-current-theme",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.267,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-previous-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.264,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-as-of-theme",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "preferred_theme": "dark mode"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.316,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "dark mode"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-current-employer",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "employer": "PixelForge"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.274,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "Lumen"
+        },
+        "matchedValues": 0,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-previous-employer",
+        "category": "temporal",
+        "answered": true,
+        "values": {
+          "employer": "PixelForge"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.256,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "employer": "PixelForge"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-current-city",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "current_city": "Rome"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.245,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Rome"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-destination",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "destination_city": "Amsterdam"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.256,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "destination_city": "Amsterdam"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-project",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "active_project": "Mosaic"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.277,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "active_project": "Mosaic"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-goal",
+        "category": "current",
+        "answered": true,
+        "values": {
+          "goal": "start a climate fund"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.283,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "goal": "start a climate fund"
+        },
+        "matchedValues": 1,
+        "expectedValueCount": 1
+      },
+      {
+        "questionId": "sofia-city-project",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "active_project": "Mosaic",
+          "current_city": "Rome"
+        },
+        "evidenceCount": 1,
+        "conflictCount": 0,
+        "latencyMs": 0.275,
+        "correct": true,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "current_city": "Rome",
+          "active_project": "Mosaic"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 2
+      },
+      {
+        "questionId": "sofia-absent-food",
+        "category": "absent",
+        "answered": false,
+        "values": {},
+        "evidenceCount": 0,
+        "conflictCount": 0,
+        "latencyMs": 0.019,
+        "reason": "NO_VECTOR_MATCH",
+        "correct": true,
+        "expectedAnswered": false,
+        "expectedValues": {},
+        "matchedValues": 0,
+        "expectedValueCount": 0
+      },
+      {
+        "questionId": "sofia-profile-summary",
+        "category": "multi_part",
+        "answered": true,
+        "values": {
+          "preferred_theme": "light mode",
+          "employer": "PixelForge",
+          "goal": "start a climate fund"
+        },
+        "evidenceCount": 3,
+        "conflictCount": 0,
+        "latencyMs": 0.306,
+        "correct": false,
+        "expectedAnswered": true,
+        "expectedValues": {
+          "preferred_theme": "light mode",
+          "employer": "Lumen",
+          "current_city": "Rome",
+          "destination_city": "Amsterdam",
+          "active_project": "Mosaic",
+          "goal": "start a climate fund"
+        },
+        "matchedValues": 2,
+        "expectedValueCount": 6
+      }
+    ]
+  },
+  "delta": {
+    "questionAccuracy": 0.2833,
+    "temporalAccuracy": 0.3333,
+    "abstentionAccuracy": 0,
+    "evidencePrecision": 0.2714,
+    "multiPartCoverage": 0.55,
+    "conflictDetectionAccuracy": 1,
+    "averageLatencyMs": 57.2278
+  },
+  "failureAnalysis": {
+    "recallTraceFailures": 0,
+    "vectorBaselineFailures": 17,
+    "vectorFailuresByCategory": {
+      "current": 7,
+      "temporal": 5,
+      "multi_part": 5
+    }
+  }
+}

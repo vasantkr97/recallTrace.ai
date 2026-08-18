@@ -153,3 +153,24 @@ export type AskMemoryAbstained = {
 };
 
 export type AskMemoryResponse = AskMemoryAnswered | AskMemoryAbstained;
+
+export type BenchmarkMetricSet = {
+  questionAccuracy: number;
+  temporalAccuracy: number;
+  abstentionAccuracy: number;
+  evidencePrecision: number;
+  multiPartCoverage: number;
+  conflictDetectionAccuracy: number;
+  averageLatencyMs: number;
+};
+
+export type BenchmarkSummaryResponse = {
+  suite: string;
+  generatedAt: string;
+  questionCount: number;
+  datasetLabel: string;
+  recallTrace: BenchmarkMetricSet;
+  vectorBaseline: BenchmarkMetricSet;
+  delta: BenchmarkMetricSet;
+  limitations: string[];
+};

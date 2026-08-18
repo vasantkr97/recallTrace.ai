@@ -10,6 +10,7 @@ import {
 } from "./memory/memoryService.js";
 import { canonicalPredicateSchema } from "./memory/claimSchema.js";
 import type { MemoryAnswerService } from "./memory/memoryAnswerService.js";
+import type { BenchmarkReportReader } from "./benchmark/benchmarkReportReader.js";
 
 export type AppDependencies = {
   webOrigin: string;
@@ -17,6 +18,7 @@ export type AppDependencies = {
   claims: ClaimRepository;
   memory: MemoryService;
   answers: MemoryAnswerService;
+  benchmark: BenchmarkReportReader;
 };
 
 const conversationMessageSchema = z.object({
@@ -145,6 +147,14 @@ export function createApp(dependencies: AppDependencies) {
     try {
       const result = await dependencies.answers.answer(parsed.data);
       response.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/benchmark", async (_request, response, next) => {
+    try {
+      response.json(await dependencies.benchmark.readSummary());
     } catch (error) {
       next(error);
     }

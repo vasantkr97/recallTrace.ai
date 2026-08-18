@@ -12,10 +12,12 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
-    "test": "tsx --test --test-concurrency=1 src/memory/claimExtractor.test.ts src/memory/questionAnalyzer.test.ts src/memory/temporalDecisionEngine.test.ts src/hydradb/claimRepository.integration.test.ts src/app.integration.test.ts",
+    "test": "tsx --test --test-concurrency=1 src/benchmark/benchmark.test.ts src/memory/claimExtractor.test.ts src/memory/questionAnalyzer.test.ts src/memory/temporalDecisionEngine.test.ts src/hydradb/claimRepository.integration.test.ts src/app.integration.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "milestone:1": "tsx src/scripts/runMilestoneOne.ts",
-    "milestone:1:verify": "tsx src/scripts/verifyMilestoneOnePersistence.ts"
+    "milestone:1:verify": "tsx src/scripts/verifyMilestoneOnePersistence.ts",
+    "benchmark:smoke": "tsx src/benchmark/runBenchmark.ts --smoke",
+    "benchmark:full": "tsx src/benchmark/runBenchmark.ts"
   },
   "dependencies": {
     "@recalltrace/contracts": "*",

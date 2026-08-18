@@ -22,7 +22,9 @@
     "hydra:logs": "docker compose --env-file .env -f infra/docker-compose.yml logs hydradb",
     "milestone:1": "npm run milestone:1 --workspace @recalltrace/api",
     "milestone:1:verify": "npm run milestone:1:verify --workspace @recalltrace/api",
-    "milestone:2": "npm run dev"
+    "milestone:2": "npm run dev",
+    "benchmark:smoke": "npm run benchmark:smoke --workspace @recalltrace/api",
+    "benchmark:full": "npm run benchmark:full --workspace @recalltrace/api"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

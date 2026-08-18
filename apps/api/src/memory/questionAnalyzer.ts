@@ -79,7 +79,7 @@ export class QuestionAnalyzer {
 }
 
 function asksForPreviousValue(question: string): boolean {
-  return /\b(?:previously|before|used\s+to|prior|originally|last\s+time)\b/i.test(
+  return /\b(?:previous|previously|before|used\s+to|prior|originally|last\s+time)\b/i.test(
     question
   );
 }
